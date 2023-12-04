@@ -1,0 +1,57 @@
+﻿@model StolovkyZilina.Models.Requests.BlogPostRequest
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1>Novy blog post - Admin</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">Nadpis</label>
+            <input type="text" class="form-control" id="heading" asp-for="Heading" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Titulka</label>
+            <input type="text" class="form-control" id="pageTitle" asp-for="PageTitle" />
+        </div>
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Titulny obrazok</label>
+            <input class="form-control" type="file" id="fileInput" name="fileInput">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Obsah</label>
+            <textarea class="form-control" rows="10" id="content" asp-for="Content"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Kratky popis</label>
+            <input type="text" class="form-control" id="shortDesc" asp-for="ShortDesc" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Autor</label>
+            <input type="text" class="form-control" id="author" asp-for="Author" />
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="visible" asp-for="Visible" />
+            <label class="form-check-label">Dostupne ?</label>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tagy</label>
+            <select class="form-select" asp-items="@Model.Tags" asp-for="SelectedTags">
+
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-dark">
+                Ulozit
+            </button>
+        </div>
+    </form>
+</div>

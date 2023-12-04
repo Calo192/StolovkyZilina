@@ -1,0 +1,62 @@
+﻿@model StolovkyZilina.Models.ViewModels.AdminMessageViewModel
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+	<div class="container">
+		<h1 class ="text-truncate" style="max-width: 800px;">@Model.Subject</h1>
+	</div>
+</div>
+
+<div class="container py-5">
+	<form method="post">
+		<div class="d-flex container mb-5">
+			<div class="flex-fill me-2">
+				<label for="author" class="form-label">Autor</label>
+				<input id="author" class="form-control" type="text" asp-for="Author" readonly>
+			</div>
+			<div class="flex-fill me-2">
+				<label for="date" class="form-label">Dátum</label>
+				<input id="date" class="form-control" type="datetime" asp-for="Date" readonly>
+			</div>
+		</div>
+		
+		<div class="form-floating mb-3">
+			<input type="text" class="form-control" id="title" placeholder="Predmet" asp-for="Subject">
+			<label for="title">Predmet správy</label>
+		</div>
+		
+		<div class="btn-group d-flex justify-content-center mb-3" role="group">
+			<input type="radio" class="btn-check" value="0" id="btnradio1" autocomplete="off" asp-for="Type">
+			<label class="btn btn-outline-danger" for="btnradio1"><i class="bi bi-bug"></i> Bug</label>
+
+			<input type="radio" class="btn-check" value="1" id="btnradio2" autocomplete="off" asp-for="Type">
+			<label class="btn btn-outline-primary" for="btnradio2"><i class="bi bi-question-diamond"></i> Požiadavka</label>
+
+			<input type="radio" class="btn-check" value="2" id="btnradio3" autocomplete="off" asp-for="Type">
+			<label class="btn btn-outline-success" for="btnradio3"><i class="bi bi-lightbulb"></i> Nápad</label>
+		</div>
+
+		<div class="form-floating mb-3">
+			<textarea class="form-control" placeholder=" ... " id="floatingTextarea2" style="height: 300px" asp-for="Message"></textarea>
+			<label for="floatingTextarea2">Správa</label>
+		</div>
+
+		<div class="btn-group d-flex justify-content-center mb-3" role="group">
+			<input type="radio" class="btn-check" value="0" id="btnradio11" autocomplete="off" asp-for="Status">
+			<label class="btn btn-outline-secondary" for="btnradio11">Nová</label>
+
+			<input type="radio" class="btn-check" value="1" id="btnradio21" autocomplete="off" asp-for="Status">
+			<label class="btn btn-outline-primary" for="btnradio21">Aktívna</label>
+
+			<input type="radio" class="btn-check" value="2" id="btnradio31" autocomplete="off" asp-for="Status">
+			<label class="btn btn-outline-success" for="btnradio31">Vyriešená</label>
+		</div>
+
+		<div class="mb-3">
+			<button type="submit" class="btn btn-primary">
+				Uložiť
+			</button>
+		</div>
+	</form>
+</div>

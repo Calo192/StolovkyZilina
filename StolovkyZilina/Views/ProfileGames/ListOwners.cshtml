@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using StolovkyZilina.Util;
+@inject UserManager<IdentityUser> userManager
+@model List<StolovkyZilina.Models.Domain.GameOwner>
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2 mb-2">
+	<div class="container">
+		<h1>Zoznam vlastnikov hry @Model.FirstOrDefault()?.BoardGame?.Name</h1>
+	</div>
+</div>
+
+
+@if (Model.Count > 0)
+{
+	<div class="container pb-5 mb-2">
+		<div class="row no-gutters">
+			@foreach (var game in Model)
+			{
+				<div class="col-lg-3 col-sm-4 col-6 category-card">
+					<div class="card border-0 shadow">
+						@if (game.Owner.FeaturedImage != null)
+						{
+							<a class="d-block" asp-area=""
+							   asp-controller="Account"
+							   asp-action="Profile"
+							   asp-route-userName="@userManager.FindByIdAsync(game.Owner.UserId.ToString()).Result.UserName">
+								<img src="data:image/png;base64,@Convert.ToBase64String(game.Owner.FeaturedImage)" class="d-inline-block img-fluid rounded-circle p-3" alt="@game.BoardGame.Name">
+							</a>
+						}
+						else
+						{
+							<a class="d-block" asp-area=""
+							   asp-controller="Account"
+							   asp-action="Profile"
+							   asp-route-userName="@userManager.FindByIdAsync(game.Owner.UserId.ToString()).Result.UserName">
+								<img src="~/Resources/Images/meeple.jpeg" class="d-inline-block img-fluid rounded-circle p-3" alt="@game.BoardGame.Name">
+							</a>
+						}
+						<div class="card-body pb-2">
+							<h3 class="h4 mb-2">@userManager.FindByIdAsync(game.Owner.UserId.ToString()).Result.UserName</h3>
+							<div class="list-group list-group-flush font-size-sm">
+									<span class="list-group-item"><b>Jazyk</b> - @game.Language.LanguageName</span>
+									<span class="list-group-item"><b>Stav</b> - @NumberToTextUtil.ConditionToString(game.Condition ?? 0)</span>
+									@if (game.Insert)
+									{
+										<span class="list-group-item"><b>+ Insert</b></span>
+									}
+									@if (game.PromoContent)
+									{
+										<span class="list-group-item"><b>+ Promo</b></span>
+									}
+									@if (game.DeluxeComponents)
+									{
+										<span class="list-group-item"><b>+ Deluxe</b></span>
+									}
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+}
+else
+{
+	<p>Tento uzivatel nema zaregistrovane ziadne hry.</p>
+}
+

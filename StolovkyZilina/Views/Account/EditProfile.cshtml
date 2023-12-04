@@ -1,0 +1,186 @@
+﻿`	@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+
+@model StolovkyZilina.Models.ViewModels.UserProfileViewModel
+@{
+}
+<form method="post">
+	<div class="container rounded bg-white mt-5 mb-5">
+		<div class="row">
+			<div class="col-md-3 border-right">
+				<div class="d-flex flex-column align-items-center text-center">
+					<h2 class="text-right">@User?.Identity?.Name</h2>
+
+					@if (Model.FeaturedImage != null)
+					{
+						<img src="data:image/png;base64,@Convert.ToBase64String(Model.FeaturedImage)" class="rounded m-3" width="300px">
+					}
+					else
+					{
+						<img class="rounded m-3" width="300px" src="~/Resources/Images/meeple.jpeg">
+					}
+					<button type="button" class="btn btn-outline-primary btn-sm mt-5" data-bs-toggle="modal" style="width: 300px;" data-bs-target="#changePic">Zmenit profilovu fotku</button> <br>
+					<button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" style="width: 300px;" data-bs-target="#changePass">Zmenit heslo</button>
+					<button class="btn btn-outline-primary dropdown-toggle mt-2 text-truncate btn-sm" style="width: 300px;" data-bs-toggle="dropdown" aria-expanded="false">
+						@Model.Email
+					</button>
+					<ul class="dropdown-menu dropdown-menu">
+						<li><a class="dropdown-item" href="#">Overit email</a></li>
+						<li><a class="dropdown-item" href="#">Zmenit email</a></li>
+					</ul>
+					<span> </span>
+				</div>
+			</div>
+			<div class="col-md-5 border-right">
+				<div class="p-3 py-5">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<h4 class="text-right">Osobne udaje</h4>
+					</div>
+					<div class="row mt-2">
+						<div class="col-md-6"><label class="labels">Meno</label><input type="text" class="form-control" placeholder="meno" asp-for="Name"></div>
+						<div class="col-md-6"><label class="labels">Priezvisko</label><input type="text" class="form-control" placeholder="priezvisko" asp-for="Surname"></div>
+					</div>
+					<div class="row mt-3">
+						<div class="col-md-12"><label class="labels">Telefonne cislo</label><input type="text" class="form-control" placeholder="telefonne cislo" asp-for="PhoneNumber"></div>
+						<div class="col-md-12"><label class="labels">Mesto najcastejsieho vyskytu</label><input type="text" class="form-control" placeholder="mesto" asp-for="City"></div>
+						<div class="col-md-12">
+							<label class="labels">Nieco o sebe</label>
+							<textarea class="form-control" rows="5" id="content" placeholder="par slovami napisat nieco o sebe ..." asp-for="Desc"></textarea>
+						</div>
+					</div>
+					<div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit" name="submitButton" value="formSubmit">Uložiť</button></div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="p-3 py-5">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<h4 class="text-right">Preferencie</h4>
+					</div><br>
+					<label for="ppt" class="form-label">Preferovaná herná doba</label>
+					<div class="container d-flex">
+						<p class="text-start" style="width: 100px">Krátka</p>
+						<input type="range" class="form-range p-3" min="0" max="4" step="1" id="ppt" asp-for="PrefferedPlaytime">
+						<p class="text-end" style="width: 100px">Dlhá</p>
+					</div>
+					<label for="pdf" class="form-label">Preferovaná obtiažnosť</label>
+					<div class="container d-flex">
+						<p class="text-start" style="width: 100px">Nízka</p>
+						<input type="range" class="form-range p-3" min="0" max="4" step="1" id="pdf" asp-for="PrefferedDifficulty">
+						<p class="text-end" style="width: 100px">Vysoká</p>
+					</div>
+					<label for="ppc" class="form-label">Preferovaný počet hráčov</label>
+					<div class="container d-flex">
+						<p class="text-start" style="width: 100px">Málo</p>
+						<input type="range" class="form-range p-3" min="0" max="2" step="1" id="ppc" asp-for="PrefferedPlayerCount">
+						<p class="text-end" style="width: 100px">Veľa</p>
+					</div>
+					<div class=" mb-3">
+						<label class="form-label">Dostupnosť podľa dní v týždni</label>
+						<div class="btn-group d-flex" role="group">
+							<input type="checkbox" class="btn-check" id="Po" asp-for="DaysAvailable[0]">
+							<label class="btn btn-outline-primary" for="Po">Po</label>
+
+							<input type="checkbox" class="btn-check" id="Ut" asp-for="DaysAvailable[1]">
+							<label class="btn btn-outline-primary" for="Ut">Ut</label>
+
+							<input type="checkbox" class="btn-check" id="St" asp-for="DaysAvailable[2]">
+							<label class="btn btn-outline-primary" for="St">St</label>
+
+							<input type="checkbox" class="btn-check" id="Št" asp-for="DaysAvailable[3]">
+							<label class="btn btn-outline-primary" for="Št">Št</label>
+
+							<input type="checkbox" class="btn-check" id="Pi" asp-for="DaysAvailable[4]">
+							<label class="btn btn-outline-primary" for="Pi">Pi</label>
+
+							<input type="checkbox" class="btn-check" id="So" asp-for="DaysAvailable[5]">
+							<label class="btn btn-outline-info" for="So">So</label>
+
+							<input type="checkbox" class="btn-check" id="Ne" asp-for="DaysAvailable[6]">
+							<label class="btn btn-outline-info" for="Ne">Ne</label>
+						</div>
+					</div>
+					<div class=" mb-3">
+						<div class="container d-flex">
+							<div class="form-check me-2">
+								<input class="form-check-input" type="checkbox" asp-for="Competitive" id="flexCheckChecked">
+								<label class="form-check-label" for="flexCheckChecked">
+									Kompetitívny hráč
+								</label>
+							</div>
+							<a class="bi bi-info-circle ms-2" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample"></a>
+						</div>
+						<div class="collapse mt-1" id="collapseExample">
+							<div class="card card-body">
+								Kompetitívni hráči zbierajú hodnotenie po každej hre. Ich hodnotenie sa po určitom počte odohraných hier stane verejné a môžu sa tak porovnávať s ostatnými kompetitívnymi hráčmi.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" asp-for="Id" />
+	<input type="hidden" asp-for="UserId" />
+	<input type="hidden" asp-for="FeaturedImage" />
+</form>
+
+<!-- Modal -->
+<form method="post" enctype="multipart/form-data">
+	<div class="modal fade" id="changePic" tabindex="-1" aria-labelledby="changePictureModal" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="changePictureModal">Zmena profilovej fotky</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label>Nahraj novy obrazok, ktory ta bude reprezentovat. Idealny pomer stran je 1:1. V pripade ze obrazok bude mat iny pomer stran, bude automaticky orezany.</label>
+					</div>
+					<div class="mb-3">
+						<label for="formFile" class="form-label">Titulny obrazok</label>
+						<input class="form-control" type="file" id="fileInput" name="fileInput">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary" name="submitButton" value="imgSubmit">Potvrdit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" asp-for="Id" />
+	<input type="hidden" asp-for="UserId" />
+	<input type="hidden" asp-for="PrefferedPlayerCount" />
+	<input type="hidden" asp-for="PrefferedDifficulty" />
+	<input type="hidden" asp-for="PrefferedPlaytime" />
+	<input type="hidden" asp-for="Desc" />
+	<input type="hidden" asp-for="City" />
+	<input type="hidden" asp-for="Surname" />
+	<input type="hidden" asp-for="Name" />
+</form>
+
+<form method="post">
+	<div class="modal fade" id="changePass" tabindex="-1" aria-labelledby="changePassModal" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="changePassModal">Zmena hesla</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label>Zadaj nove heslo</label>
+					</div>
+					<div class="mb-3">
+						<input class="form-control mb2" type="text" asp-for="Password">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary" name="submitButton" value="passSubmit">Potvrdit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" asp-for="Id" />
+	<input type="hidden" asp-for="UserId" />
+</form>

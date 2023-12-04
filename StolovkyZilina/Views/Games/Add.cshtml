@@ -1,0 +1,104 @@
+﻿@model StolovkyZilina.Models.Requests.GameRequest
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1>Nova hra</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <form method="post" enctype="multipart/form-data">
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="name" placeholder="Nazov" asp-for="Name">
+            <label for="name">Nazov</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="author" placeholder="Autor" asp-for="Author">
+            <label for="author">Autor</label>
+        </div>
+
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Titulny obrazok</label>
+            <input class="form-control" type="file" id="fileInput" name="fileInput">
+        </div>
+
+        <div class="form-floating mb-3">
+            <textarea class="form-control" placeholder="Kratky popis" id="shortdesc" asp-for="ShortDesc"></textarea>
+            <label for="shortdesc">Kratky popis</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <textarea class="form-control" placeholder="Popis" id="desc" asp-for="Desc" style="height: 200px"></textarea>
+            <label for="desc">Popis</label>
+        </div>
+
+        <div class="mb-3 p-3 border rounded">
+            <label for="diffRange" class="form-label">Obtiaznost</label>
+            <div class="container d-flex">
+                <p style="width: 120px">Nizka</p>
+                <input type="range" class="form-range p-3" min="0" max="4" step="1" id="diffRange" asp-for="Difficulty">
+                <p class="text-end" style="width: 120px">Vysoka</p>
+            </div>
+        </div>
+
+        <div class="mb-3 p-3 border rounded">
+            <label for="playtime" class="form-label">Herna doba</label>
+            <div class="container d-flex">
+                <p style="width: 120px">Kratka</p>
+                <input type="range" class="form-range p-3" min="0" max="4" step="1" id="playtime" asp-for="Playtime">
+                <p class="text-end" style="width: 120px">Dlha</p>
+            </div>
+        </div>
+
+        <div class="mb-3 p-3 border rounded">
+            <label for="spacereq" class="form-label">Priestorove poziadavky</label>
+            <div class="container d-flex">
+                <p style="width: 120px">Nizke</p>
+                <input type="range" class="form-range p-3" min="0" max="2" step="1" value="1" id="spacereq" asp-for="SpaceRequirement">
+                <p class="text-end" style="width: 120px">Vysoke</p>
+            </div>
+        </div>
+
+        <div class="container-fluid d-flex mb-3">
+            <div class="form-floating flex-fill me-2">
+                <input type="number" class="form-control" id="minp" min="1" value="1" asp-for="MinPlayerCount">
+                <label for="minp">Minimalny pocet hracov</label>
+            </div>
+
+            <div class="form-floating flex-fill ms-2">
+                <input type="number" class="form-control" id="maxp" min="1" value="4" asp-for="MaxPlayerCount">
+                <label for="maxp">Maximalny pocet hracov</label>
+            </div>
+        </div>
+
+        <div class="mb-3 p-3">
+            <label for="supp" class="form-label">Typ hry</label>
+            <div id="supp" class="container">
+                <div class="btn-group d-flex justify-content-center" role="group" aria-label="Doplnky">
+                    <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" asp-for="Cooperative">
+                    <label class="btn btn-outline-primary" for="btncheck1">Kooperatívna</label>
+
+                    <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" asp-for="OnPoints">
+                    <label class="btn btn-outline-primary" for="btncheck2">Na body</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tagy</label>
+            <select class="form-select" asp-items="@Model.Tags" asp-for="SelectedTags">
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">
+                Ulozit
+            </button>
+        </div>
+    </form>
+</div>
+

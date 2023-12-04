@@ -1,0 +1,52 @@
+﻿@model List<StolovkyZilina.Models.ViewModels.UserProfileViewModel>
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 mb-5 py-2">
+	<div class="container">
+		<h1>Registrovaní uživatelia</h1>
+	</div>
+</div>
+
+
+
+@if (Model.Any())
+{
+	<div class="container">
+		<div class="row">
+			@foreach (var profile in Model)
+			{
+				<div class="col-md-6 col-lg-4 mb-5">
+					<article class="text-center p-4 shadow rounded">
+						@if (profile.FeaturedImage != null)
+						{
+							<img src="data:image/png;base64,@Convert.ToBase64String(profile.FeaturedImage)" class="d-inline-block img-fluid mb-4 rounded-circle shadow p-2">
+						}
+						else
+						{
+							<img class="d-inline-block img-fluid mb-4 rounded-circle shadow p-2" src="~/Resources/Images/meeple.jpeg">
+						}
+						<div style="min-height:12vh">
+							<h4 class="h5">@profile.Alias</h4>
+							<p>@profile.Name @profile.Surname</p>
+							@if (!string.IsNullOrEmpty(profile.PhoneNumber))
+							{
+								<p><a class="link-offset-2 link-underline link-underline-opacity-0" href="tel:@profile.PhoneNumber">@profile.PhoneNumber</a></p>
+							}
+							<div class="container">
+								<a class="btn btn-outline-primary" asp-area=""
+								   asp-controller="Account"
+								   asp-action="Profile"
+								   asp-route-userName="@profile.Alias">Profil</a>
+							</div>
+						</div>
+					</article>
+				</div>
+			}
+		</div>
+	</div>
+}
+else
+{
+	<p>Zoznam uzivatelov je prazdny!</p>
+}

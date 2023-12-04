@@ -1,0 +1,82 @@
+﻿@model StolovkyZilina.Models.Requests.BlogPostRequest
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1>Upravit existujuci blog post - Admin</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    @if (Model != null)
+    {
+        <form method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label">Id</label>
+                <input type="text" class="form-control" id="id" asp-for="Id" readonly/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nadpis</label>
+                <input type="text" class="form-control" id="heading" asp-for="Heading" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Titulka</label>
+                <input type="text" class="form-control" id="pageTitle" asp-for="PageTitle" />
+            </div>
+
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Titulny obrazok</label>
+                <input class="form-control" type="file" id="fileInput" name="fileInput">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Obsah</label>
+                <textarea class="form-control" rows="10" id="content" asp-for="Content"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Kratky popis</label>
+                <input type="text" class="form-control" id="shortDesc" asp-for="ShortDesc" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">URL Handle</label>
+                <input type="text" class="form-control" id="urlHandle" asp-for="UrlHandle" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Datum zverejnenia</label>
+                <input type="date" class="form-control" id="publishDate" asp-for="PublishDate" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Autor</label>
+                <input type="text" class="form-control" id="author" asp-for="Author" />
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="visible" asp-for="Visible" />
+                <label class="form-check-label">Dostupne ?</label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tagy</label>
+                <select class="form-select" asp-items="@Model.Tags" asp-for="SelectedTags">
+                </select>
+            </div>
+
+            <div class="mb-3 d-flex">
+                <button type="submit" class="btn btn-primary">Uložiť</button>
+                <button type="submit" class="btn btn-danger ms-2" 
+                asp-area="" asp-controller="AdminBlogPosts" asp-action="Delete">Odstrániť</button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <p>Blog post nebol najdeny</p>
+    }
+
+</div>

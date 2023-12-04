@@ -1,0 +1,129 @@
+﻿@model StolovkyZilina.Models.Requests.GameRequest
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1>Upravit existujucu hru - Admin</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <form method="post" enctype="multipart/form-data">
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="name" placeholder="Nazov" asp-for="Name">
+            <label for="name">Nazov</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="author" placeholder="Autor" asp-for="Author">
+            <label for="author">Autor</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            @if (Model.FeaturedImage != null)
+            {
+                <div class="mb-3 d-flex">
+                    <img src="data:image/png;base64,@Convert.ToBase64String(Model.FeaturedImage)" class="object-fit-contain" style="height: 500px" alt="Model.Name">
+                    <div class="m-2">
+                        <p class="text-primary">Velkost obrazka : @Model.GetImageSizeInKB() KB</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p class="text-danger">Hra nema titulny obrazok !</p>
+            }
+        </div>
+
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="fileInput">Hlavna fotka</label>
+            <input type="file" class="form-control" id="fileInput" name="fileInput" aria-describedby="inputGroupFileAddon" aria-label="Upload">
+            <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon">Overit</button>
+            <input type="hidden" asp-for="FeaturedImage">
+        </div>
+
+        <div class="form-floating mb-3">
+            <textarea class="form-control" placeholder="Kratky popis" id="shortdesc" asp-for="ShortDesc"></textarea>
+            <label for="shortdesc">Kratky popis</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <textarea class="form-control" placeholder="Popis" id="desc" asp-for="Desc" style="height: 200px"></textarea>
+            <label for="desc">Popis</label>
+        </div>
+
+        <div class="mb-3 p-3 border rounded">
+            <label for="diffRange" class="form-label">Obtiaznost</label>
+            <div class="container d-flex">
+                <p style="width: 120px">Nizka</p>
+                <input type="range" class="form-range p-3" min="0" max="4" step="1" id="diffRange" asp-for="Difficulty">
+                <p class="text-end" style="width: 120px">Vysoka</p>
+            </div>
+        </div>
+
+        <div class="mb-3 p-3 border rounded">
+            <label for="playtime" class="form-label">Herna doba</label>
+            <div class="container d-flex">
+                <p style="width: 120px">Kratka</p>
+                <input type="range" class="form-range p-3" min="0" max="4" step="1" id="playtime" asp-for="Playtime">
+                <p class="text-end" style="width: 120px">Dlha</p>
+            </div>
+        </div>
+
+        <div class="mb-3 p-3 border rounded">
+            <label for="spacereq" class="form-label">Priestorove poziadavky</label>
+            <div class="container d-flex">
+                <p style="width: 120px">Nizke</p>
+                <input type="range" class="form-range p-3" min="0" max="2" step="1" id="spacereq" asp-for="SpaceRequirement">
+                <p class="text-end" style="width: 120px">Vysoke</p>
+            </div>
+        </div>
+
+        <div class="container-fluid d-flex mb-3">
+            <div class="form-floating flex-fill me-2">
+                <input type="number" class="form-control" id="minp" value="1" asp-for="MinPlayerCount">
+                <label for="minp">Minimalny pocet hracov</label>
+            </div>
+
+            <div class="form-floating flex-fill ms-2">
+                <input type="number" class="form-control" id="maxp" value="5" asp-for="MaxPlayerCount">
+                <label for="maxp">Maximalny pocet hracov</label>
+            </div>
+        </div>
+
+        <div class="mb-3 p-3">
+            <label for="supp" class="form-label">Typ hry</label>
+            <div id="supp" class="container">
+                <div class="btn-group d-flex justify-content-center" role="group" aria-label="Doplnky">
+                    <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" asp-for="Cooperative">
+                    <label class="btn btn-outline-primary" for="btncheck1">Kooperatívna</label>
+
+                    <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" asp-for="OnPoints">
+                    <label class="btn btn-outline-primary" for="btncheck2">Na body</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tagy</label>
+            <select class="form-select" asp-items="@Model.Tags" asp-for="SelectedTags">
+            </select>
+        </div>
+
+        <div class="mb-3 d-flex">
+            <button type="submit" class="btn btn-primary m-2">Uložiť</button>
+            <div class="m-2">
+                <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" asp-for="Approved">
+                <label class="btn btn-outline-primary" for="btncheck3">Schvalene</label>
+            </div>
+            <button type="submit" class="btn btn-danger m-2"
+                    asp-area="" asp-controller="AdminGames" asp-action="Delete">
+                Odstrániť
+            </button>
+            <input type="hidden" asp-for="Id">
+            <input type="hidden" asp-for="ContentId">
+        </div>
+    </form>
+</div>

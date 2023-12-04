@@ -1,0 +1,179 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+
+@model StolovkyZilina.Models.ViewModels.UserProfileViewModel
+@{
+}
+
+<div class="container rounded bg-white mt-5 mb-5">
+	<div class="row">
+		<div class="col-md-3 border-right">
+			<div class="d-flex flex-column align-items-center text-center">
+				<h2 class="text-right">@Model.Alias</h2>
+
+				@if (Model.FeaturedImage != null)
+				{
+					<img src="data:image/png;base64,@Convert.ToBase64String(Model.FeaturedImage)" class="rounded m-3" width="300px">
+				}
+				else
+				{
+					<img class="rounded m-3" width="300px" src="~/Resources/Images/meeple.jpeg">
+				}
+				<span> </span>
+				<a type="button" class="btn btn-outline-primary btn-sm" style="width: 300px;"
+				   asp-area=""
+				   asp-controller="ProfileGames"
+				   asp-action="ListGames"
+				   asp-route-id="@Model.Id">
+					Zbierka hier
+				</a>
+			</div>
+		</div>
+		<div class="col-md-5 border-right">
+			<div class="p-3 py-5">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h4 class="text-right">Osobne udaje</h4>
+				</div>
+				<dl class="row">
+					@if (!string.IsNullOrEmpty(Model.Name))
+					{
+						<dt class="col-sm-3">Meno</dt>
+						<dd class="col-sm-9">@Model.Name</dd>
+					}
+
+					@if (!string.IsNullOrEmpty(Model.Surname))
+					{
+						<dt class="col-sm-3">Priezvisko</dt>
+						<dd class="col-sm-9">@Model.Surname</dd>
+					}
+
+					@if (!string.IsNullOrEmpty(Model.City))
+					{
+						<dt class="col-sm-3">Mesto</dt>
+						<dd class="col-sm-9">@Model.City</dd>
+					}
+
+					@if (!string.IsNullOrEmpty(Model.PhoneNumber))
+					{
+						<dt class="col-sm-3">Telefón</dt>
+						<dd class="col-sm-9">@Model.PhoneNumber</dd>
+					}
+
+					@if (!string.IsNullOrEmpty(Model.Desc))
+					{
+						<dt class="col-sm-3">O sebe</dt>
+						<dd class="col-sm-9">@Model.Desc</dd>
+					}
+				</dl>
+			</div>
+
+
+
+		</div>
+		<div class="col-md-4">
+			<div class="p-3 py-5">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h4 class="text-right">Preferencie</h4>
+				</div><br>
+				<label for="ppt" class="form-label">Preferovana herna doba</label>
+				<div class="container d-flex">
+					<p class="text-start" style="width: 100px">Kratka</p>
+					<input type="range" class="form-range p-3" min="0" max="4" step="1" id="ppt" asp-for="PrefferedPlaytime" disabled>
+					<p class="text-end" style="width: 100px">Dlha</p>
+				</div>
+				<label for="pdf" class="form-label">Preferovana obtiaznost</label>
+				<div class="container d-flex">
+					<p class="text-start" style="width: 100px">Nizka</p>
+					<input type="range" class="form-range p-3" min="0" max="4" step="1" id="pdf" asp-for="PrefferedDifficulty" disabled>
+					<p class="text-end" style="width: 100px">Vysoka</p>
+				</div>
+				<label for="ppc" class="form-label">Preferovany pocet hracov</label>
+				<div class="container d-flex">
+					<p class="text-start" style="width: 100px">Malo</p>
+					<input type="range" class="form-range p-3" min="0" max="2" step="1" id="ppc" asp-for="PrefferedPlayerCount" disabled>
+					<p class="text-end" style="width: 100px">Vela</p>
+				</div>
+				<div class=" mb-3">
+					@if (Model.DaysAvailable.Any(d => d))
+					{
+						<label class="form-label">Dostupnosť podľa dní v týždni</label>
+						<div class="container d-flex">
+							@if (Model.DaysAvailable.All(d => d))
+							{
+								<span class="badge bg-success">Kedykoľvek</span>
+							}
+							else if (Model.DaysAvailable[0] && Model.DaysAvailable[1] && Model.DaysAvailable[2] && Model.DaysAvailable[3] && Model.DaysAvailable[4])
+							{
+								<span class="badge bg-primary me-1">Pracovné dni</span>
+								if (Model.DaysAvailable[5])
+								{
+									<span class="badge bg-info text-black me-1">Sobota</span>
+								}
+								if (Model.DaysAvailable[6])
+								{
+									<span class="badge bg-info text-black me-1">Nedeľa</span>
+								}
+							}
+							else if (Model.DaysAvailable[6] && Model.DaysAvailable[5])
+							{
+								if (Model.DaysAvailable[0])
+								{
+									<span class="badge bg-primary text-black me-1">Pondelok</span>
+								}
+								if (Model.DaysAvailable[1])
+								{
+									<span class="badge bg-primary text-black me-1">Utorok</span>
+								}
+								if (Model.DaysAvailable[2])
+								{
+									<span class="badge bg-primary text-black me-1">Streda</span>
+								}
+								if (Model.DaysAvailable[3])
+								{
+									<span class="badge bg-primary text-black me-1">Štvrtok</span>
+								}
+								if (Model.DaysAvailable[4])
+								{
+									<span class="badge bg-primary text-black me-1">Piatok</span>
+								}
+
+								<span class="badge bg-info me-1">Víkend</span>
+							}
+							else if (Model.DaysAvailable.Any(d => d))
+							{
+								if (Model.DaysAvailable[0])
+								{
+									<span class="badge bg-primary text-black me-1">Pondelok</span>
+								}
+								if (Model.DaysAvailable[1])
+								{
+									<span class="badge bg-primary text-black me-1">Utorok</span>
+								}
+								if (Model.DaysAvailable[2])
+								{
+									<span class="badge bg-primary text-black me-1">Streda</span>
+								}
+								if (Model.DaysAvailable[3])
+								{
+									<span class="badge bg-primary text-black me-1">Štvrtok</span>
+								}
+								if (Model.DaysAvailable[4])
+								{
+									<span class="badge bg-primary text-black me-1">Piatok</span>
+								}
+								if (Model.DaysAvailable[5])
+								{
+									<span class="badge bg-info text-black me-1">Sobota</span>
+								}
+								if (Model.DaysAvailable[6])
+								{
+									<span class="badge bg-info text-black me-1">Nedeľa</span>
+								}
+							}
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

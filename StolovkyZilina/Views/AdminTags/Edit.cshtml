@@ -1,0 +1,46 @@
+﻿@model StolovkyZilina.Models.Requests.EditTagRequest
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1>Uprava tagu - Admin</h1>
+    </div>
+</div> 
+
+<div class="container py-5">
+     @if(Model != null)
+     {
+        <form method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Id</label>
+                <input type="text" id="id" class="form-control" asp-for="Id" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nazov</label>
+                <input type="text" id="name" class="form-control" asp-for="Name" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Skrateny nazov</label>
+                <input type="text" id="displayName" class="form-control" asp-for="DisplayName" />
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex">
+                    <button type="submit" class="btn btn-primary">
+                        Ulozit
+                    </button>
+                </div>
+            </div>
+
+        </form>
+     }
+     else
+     {
+         <p>Tag nebol najdeny</p>
+     }
+    
+</div>

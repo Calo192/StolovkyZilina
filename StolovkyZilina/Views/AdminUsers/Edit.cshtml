@@ -1,0 +1,69 @@
+﻿@using StolovkyZilina.Util
+
+@model StolovkyZilina.Models.ViewModels.UserViewModel
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1>Uprava uzivatela @Model?.Name - Admin</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    @if (Model != null)
+    {
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">Id</label>
+                <input type="text" class="form-control" id="id" asp-for="Id" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Uzivatelske meno</label>
+                <input type="text" class="form-control" id="heading" asp-for="Name"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="text" class="form-control" id="pageTitle" asp-for="Email" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Telefonne cislo</label>
+                <input type="text" class="form-control" id="pageTitle" asp-for="PhoneNumber" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Heslo</label>
+                <input type="text" class="form-control" id="pageTitle" asp-for="Password" placeholder="Nezmenene"/>
+            </div>
+
+            <div class=" mb-3">
+                <label class="form-label">Uzivatelske prava</label>
+                <div class="btn-group d-flex" role="group">
+                    <input type="radio" class="btn-check" value="@Constants.UserP3" id="@Constants.UserP3" asp-for="Role">
+                    <label class="btn btn-outline-secondary" for="@Constants.UserP3">@Constants.TranslateRole(Constants.UserP3)</label>
+
+                    <input type="radio" class="btn-check" value="@Constants.UserP2" id="@Constants.UserP2" asp-for="Role">
+                    <label class="btn btn-outline-secondary" for="@Constants.UserP2">@Constants.TranslateRole(Constants.UserP2)</label>
+
+                    <input type="radio" class="btn-check" value="@Constants.UserP1" id="@Constants.UserP1" asp-for="Role">
+                    <label class="btn btn-outline-secondary" for="@Constants.UserP1">@Constants.TranslateRole(Constants.UserP1)</label>
+
+                    <input type="radio" class="btn-check" value="@Constants.Admin" id="@Constants.Admin" asp-for="Role">
+                    <label class="btn btn-outline-primary" for="@Constants.Admin">@Constants.TranslateRole(Constants.Admin)</label>
+                </div>
+            </div>
+
+            <div class="mb-3 d-flex">
+                <button type="submit" class="btn btn-primary">Ulozit</button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <p>Uzivatel nebol najdeny</p>
+    }
+
+</div>

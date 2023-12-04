@@ -1,0 +1,40 @@
+﻿@model StolovkyZilina.Models.ViewModels.GameOwnerViewmodel
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+	<div class="container">
+		<h1>@Model.Name</h1>
+	</div>
+</div>
+
+<div class="container py-5">
+	<form method="post">
+		<div class="mb-3 p-3">
+			<label for="relation" class="form-label">Hru chcem hrať</label>
+			<div id="relation" class="container">
+				<div class="btn-group d-flex justify-content-center" role="group">
+					<input type="radio" class="btn-check" id="n1" asp-for="PlaiyngInterest" value="0">
+					<label class="btn btn-outline-danger" for="n1">NIKDY</label>
+
+					<input type="radio" class="btn-check" id="n2" asp-for="PlaiyngInterest" value="1">
+					<label class="btn btn-outline-primary" for="n2">Chcem skúsiť</label>
+
+					<input type="radio" class="btn-check" id="n3" asp-for="PlaiyngInterest" value="2">
+					<label class="btn btn-outline-primary" for="n3">Z času na cas</label>
+
+					<input type="radio" class="btn-check" id="n4" asp-for="PlaiyngInterest" value="3">
+					<label class="btn btn-outline-success" for="n4">Pravidelne</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="mb-3">
+			<button type="submit" class="btn btn-primary" id="submitBtn">
+				Ulozit
+			</button>
+			<input type="hidden" asp-for="GameId" />
+			<input type="hidden" asp-for="OwnerId" />
+		</div>
+	</form>
+</div>

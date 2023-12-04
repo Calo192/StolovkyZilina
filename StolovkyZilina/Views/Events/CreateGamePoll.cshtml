@@ -1,0 +1,161 @@
+﻿@model StolovkyZilina.Models.Requests.CreateGamePollRequest
+@{
+}
+
+<div class="container align-content-center text-center">
+	<form method="post">
+		<div class="d-flex justify-content-center row">
+			<div class="col-lg-6">
+				<div id="carouselExampleAutoplaying" class="carousel slide w-100 d-flex justify-content-around" data-bs-ride="carousel">
+					<div class="carousel-inner w-100">
+						@foreach (var suggestion in Model.Suggestions)
+						{
+							<div class="carousel-item @(suggestion == Model.Suggestions.First() ? "active" : "")">
+								@if (suggestion.FeaturedImage != null)
+								{
+									<img src="data:image/png;base64,@Convert.ToBase64String(suggestion.FeaturedImage)" class="d-block w-100" alt="@suggestion.Name">
+								}
+								else
+								{
+									<img src="placeholder-image-url" class="d-block w-100" alt="@suggestion.Name">
+								}
+								<div class="carousel-caption d-none d-md-block bg-secondary bg-opacity-50 shadow">
+									<h5>@suggestion.Name</h5>
+									<p>Žiadanosť - @suggestion.Score</p>
+								</div>
+							</div>
+						}
+					</div>
+					<!-- Indicators -->
+					<ol class="carousel-indicators">
+						@for (int i = 0; i < Model.Suggestions.Count; i++)
+						{
+							<li data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="@i" class="@((i == 0) ? "active" : "")"></li>
+						}
+					</ol>
+				</div>
+			</div>
+			<div class="col-lg-6 mt-1">
+				<div class="w-75">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="name" placeholder="Nazov" asp-for="Name">
+                        <label for="name">Názov hlasovania</label>
+                    </div>
+					<div class="form-floating flex-fill mb-3">
+						<input type="number" class="form-control" id="minp" min="1" asp-for="NumberOfVotesPerUser">
+						<label for="minp">Maximálny počet hlasov na uživateľa</label>
+					</div>
+					<div class="form-floating flex-fill mb-3">
+						<input class="form-control" list="datalistOptions" id="gamesList">
+						<datalist id="datalistOptions">
+							@foreach (var game in Model.AllValidGameNames)
+							{
+								<option value="@game"></option>
+							}
+						</datalist>
+						<label for="gamesList" class="form-label">Názov hry</label>
+					</div>
+					<button type="button" class="btn btn-primary mb-3" id="addGameButton">
+						Pridať
+					</button>
+
+                    <div class="list-group form-floating flex-fill mb-3" id="gamesListGroup">
+                        @for (var i = 0; i < Model.GamesInPoll.Count; i++)
+                        {
+                            <button type="button" class="list-group-item list-group-item-action" onclick="removeGame('@Model.GamesInPoll[i]')">@Model.GamesInPoll[i]</button>
+                            <input type="hidden" asp-for="GamesInPoll" value="@Model.GamesInPoll[i]" />
+                        }
+                    </div>
+				</div>
+			</div>
+		</div>
+		<button type="submit" name="submitButton" class="btn btn-primary mt-5">
+			Uložiť
+		</button>
+        <input type="hidden" asp-for="EventId" />
+	</form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var model = @Html.Raw(Json.Serialize(Model));
+        var addGameButton = document.getElementById('addGameButton');
+        var gamesListInput = document.getElementById('gamesList');
+        var gamesListGroup = document.getElementById('gamesListGroup');
+        var form = document.querySelector('form');
+
+        addGameButton.addEventListener('click', function () {
+            var selectedGame = gamesListInput.value.trim();
+
+            // Check if the game is in AllValidGameNames
+            if (model.allValidGameNames.includes(selectedGame)) {
+                // Check if the game is not already in GamesInPoll
+                if (!model.gamesInPoll.includes(selectedGame)) {
+                    // Add the selected game to the GamesInPoll collection
+                    model.gamesInPoll.push(selectedGame);
+
+                    // Update the list-group to display the updated GamesInPoll
+                    updateGamesList();
+
+                    // Clear the input field
+                    gamesListInput.value = '';
+                } else {
+                    // Inform the user about the duplicate value
+                    alert('Táto hra sa už nachádza v liste.');
+                }
+            } else {
+                // Inform the user that the selected game is not valid
+                alert('Zadaj správny názov hry.');
+            }
+        });
+
+        function removeGame(gameName) {
+            // Remove the selected game from the GamesInPoll collection
+            model.gamesInPoll = model.gamesInPoll.filter(function (game) {
+                return game !== gameName;
+            });
+
+            // Update the list-group and hidden inputs to reflect the removal
+            updateGamesList();
+        }
+
+        function updateGamesList() {
+            gamesListGroup.innerHTML = '';
+            model.gamesInPoll.forEach(function (game) {
+                var button = document.createElement('button');
+                button.setAttribute('type', 'button');
+                button.setAttribute('class', 'list-group-item list-group-item-action');
+                button.textContent = game;
+                button.addEventListener('click', function () {
+                    removeGame(game);
+                });
+                gamesListGroup.appendChild(button);
+
+                // Create hidden input fields for each game in GamesInPoll
+                var hiddenInput = document.createElement('input');
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'GamesInPoll');
+                hiddenInput.setAttribute('value', game);
+                form.appendChild(hiddenInput);
+            });
+        }
+
+        // Intercept form submission to update hidden inputs
+        form.addEventListener('submit', function () {
+            // Remove all existing hidden inputs for GamesInPoll
+            var existingHiddenInputs = document.querySelectorAll('input[name="GamesInPoll"]');
+            existingHiddenInputs.forEach(function (input) {
+                input.remove();
+            });
+
+            // Add hidden inputs for the current state of GamesInPoll
+            model.gamesInPoll.forEach(function (game) {
+                var hiddenInput = document.createElement('input');
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'GamesInPoll');
+                hiddenInput.setAttribute('value', game);
+                form.appendChild(hiddenInput);
+            });
+        });
+    });
+</script>

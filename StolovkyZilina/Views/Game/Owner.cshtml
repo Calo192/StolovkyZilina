@@ -1,0 +1,136 @@
+﻿@model StolovkyZilina.Models.ViewModels.GameOwnerViewmodel
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+	<div class="container">
+		<h1>@Model.Name</h1>
+	</div>
+</div>
+
+<div class="container py-5">
+	<form method="post">
+		<div class="mb-3 p-3">
+			<label for="relation" class="form-label">Status vlastníctva</label>
+			<div id="relation" class="container">
+				<div class="btn-group d-flex justify-content-center" role="group">
+					<input type="radio" class="btn-check" id="notowner" asp-for="Ownership" value="0">
+					<label class="btn btn-outline-danger" for="notowner">Hru nemám ani nechcem</label>
+
+					<input type="radio" class="btn-check" id="wtb" asp-for="Ownership" value="1">
+					<label class="btn btn-outline-primary" for="wtb">Hru chcem</label>
+
+					<input type="radio" class="btn-check" id="owner" asp-for="Ownership" value="2">
+					<label class="btn btn-outline-success" for="owner">Hru mám</label>
+				</div>
+			</div>
+		</div>
+
+		<div id="wtbd">
+			<div class="mb-3 p-3">
+				<label for="wtbg" class="form-label">Ako moc hru chcem?</label>
+				<div id="wtbg" class="container">
+					<div class="btn-group d-flex justify-content-center" role="group">
+						<input type="radio" class="btn-check" id="wtbcheck1" autocomplete="off" asp-for="WantToBuy" value="4">
+						<label class="btn btn-outline-primary" for="wtbcheck1">Už je objednané</label>
+
+						<input type="radio" class="btn-check" id="wtbcheck2" autocomplete="off" asp-for="WantToBuy" value="3">
+						<label class="btn btn-outline-primary" for="wtbcheck2">Čo najskôr</label>
+
+						<input type="radio" class="btn-check" id="wtbcheck3" autocomplete="off" asp-for="WantToBuy" value="2">
+						<label class="btn btn-outline-primary" for="wtbcheck3">Keď bude v zľave</label>
+
+						<input type="radio" class="btn-check" id="wtbcheck4" autocomplete="off" asp-for="WantToBuy" value="1">
+						<label class="btn btn-outline-primary" for="wtbcheck4">Snáď jedného dňa</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="ownd">
+			<div class="mb-3 p-3">
+				<label for="lang" class="form-label">Jazyk</label>
+				<div id="lang" class="container">
+					<select class="form-select" aria-label="Jazyk" asp-items="@Model.Languages" asp-for="SelectedLanguage">
+					</select>
+				</div>
+			</div>
+
+			<div class="mb-3 p-3">
+				<label for="playtime" class="form-label">Stav hry</label>
+				<div class="container d-flex">
+					<p style="width: 120px">Zlý</p>
+					<input type="range" class="form-range p-3" min="0" max="4" step="1" id="playtime" asp-for="Condition">
+					<p class="text-end" style="width: 120px">Dobrý</p>
+				</div>
+			</div>
+
+			<div class="mb-3 p-3">
+				<label for="supp" class="form-label">Doplnky</label>
+				<div id="supp" class="container">
+					<div class="btn-group d-flex justify-content-center" role="group" aria-label="Doplnky">
+						<input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" asp-for="Insert">
+						<label class="btn btn-outline-primary" for="btncheck1">Insert</label>
+
+						<input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" asp-for="DeluxeComponents">
+						<label class="btn btn-outline-primary" for="btncheck2">Deluxe komponenty</label>
+
+						<input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" asp-for="PromoContent">
+						<label class="btn btn-outline-primary" for="btncheck3">Promo obsah</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+
+		<div class="mb-3">
+			<button type="submit" class="btn btn-primary" id="submitBtn">
+				Ulozit
+			</button>
+			<input type="hidden" asp-for="GameId" />
+			<input type="hidden" asp-for="IsFavorite" />
+			<input type="hidden" asp-for="OwnerId" />
+			<input type="hidden" asp-for="PlaiyngInterest" />
+		</div>
+	</form>
+</div>
+
+@section scripts
+	{
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// Get references to the radio buttons and the "supp" div
+			var notOwnerRadio = document.getElementById('notowner');
+			var ownerRadio = document.getElementById('owner');
+			var wtbRadio = document.getElementById('wtb');
+			var ownDiv = document.getElementById('ownd');
+			var wtbDiv = document.getElementById('wtbd');
+
+			// Function to toggle the display of the "supp" div based on the radio button state
+			function toggleOwnDiv() {
+				if (ownerRadio.checked) 
+				{
+					ownDiv.style.display = 'block';
+					wtbDiv.style.display = 'none';
+				}
+				else if (wtbRadio.checked) {
+					ownDiv.style.display = 'none';
+					wtbDiv.style.display = 'block';
+				}
+				else 
+				{
+					ownDiv.style.display = 'none';
+					wtbDiv.style.display = 'none';
+				}
+			}
+
+			// Add event listeners to all radio buttons
+			notOwnerRadio.addEventListener('change', toggleOwnDiv);
+			ownerRadio.addEventListener('change', toggleOwnDiv);
+			wtbRadio.addEventListener('change', toggleOwnDiv);
+
+			// Initial state check
+			toggleOwnDiv();
+		});
+	</script>
+}

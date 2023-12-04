@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+@model List<StolovkyZilina.Models.Domain.Event>
+
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 mb-5 py-2">
+	<div class="container d-flex justify-content-between align-items-center">
+		<h1>Udalosti</h1>
+		@if (signInManager.IsSignedIn(User) && User.IsInRole("UserP1"))
+		{
+			<a class="btn btn-primary" asp-area="" asp-controller="Events" asp-action="Add">
+				Nová udalosť
+			</a>
+		}
+	</div>
+</div>
+
+<div class="container pb-5 mb-2">
+	<!-- Game grid-->
+	@foreach (var eventModel in Model)
+	{
+		<div class="row shadow mb-5">
+			<div class="col-lg-2 d-flex align-items-center justify-content-center text-center">
+				<div>
+					<h1 class="fw-bold">@eventModel.Time.ToString("dd")</h1>
+					<h1>@eventModel.Time.ToString("MMM")</h1>
+					<h4>@eventModel.Time.ToString("yyyy")</h4>
+				</div>
+			</div>
+			@if (eventModel.FeaturedImage != null)
+			{
+				<div class="col-lg-2 align-items-start d-flex flex-column">
+					<img src="data:image/png;base64,@Convert.ToBase64String(eventModel.FeaturedImage)" class="img-fluid h-100" alt="@eventModel.Name">
+				</div>
+			}
+			else
+			{
+				<div class="col-lg-2 align-items-start d-flex flex-column">
+					<img src="~/Resources/Images/eventcalendar.jpeg" class="img-fluid h-100" alt="@eventModel.Name">
+				</div>
+			}
+
+			<div class="col-lg-8 p-3 d-flex flex-column justify-content-between">
+				<div>
+					<h3>@eventModel.Name</h3>
+					<p>@eventModel.ShortDescription</p>
+				</div>
+
+				<div class="d-flex justify-content-between">
+					<div>
+						<strong>Miesto: </strong> <a href="@("https://www.google.com/maps?q="+eventModel.Location.City+","+eventModel.Location.Name)" target="_blank">@eventModel.Location.Name</a>
+						<br>
+						<strong>Začiatok: </strong> @eventModel.Time.ToString("H:mm")
+					</div>
+					<div class="mt-auto">
+						<a class="btn btn-outline-primary" asp-area=""
+						   asp-controller="Events"
+						   asp-action="Detail"
+						   asp-route-id="@eventModel.Id" class="card-link">Detail</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>

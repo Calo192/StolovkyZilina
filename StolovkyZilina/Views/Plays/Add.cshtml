@@ -1,0 +1,85 @@
+﻿@model StolovkyZilina.Models.Requests.GamePlayRequest
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+	<div class="container">
+		<h1>Nova herna partia</h1>
+	</div>
+</div>
+
+<div class="container py-5">
+	<form method="post">
+		<div class="mb-3">
+			<div class="form-floating flex-fill">
+				<input class="form-control" list="datalistOptions" asp-for="SelectedGame" id="gamesList" required>
+				<datalist id="datalistOptions">
+					@foreach (var game in Model.Games)
+					{
+						<option value="@game"></option>
+					}
+				</datalist>
+				<label for="gamesList" class="form-label">Nazov hry</label>
+			</div>
+			<span asp-validation-for="SelectedGame" class="text-danger"></span>
+		</div>
+
+		<div class="mb-3">
+			<div class="form-floating flex-fill me-2">
+				<textarea class="form-control" id="desc" style="height: 100px" asp-for="Desc"></textarea>
+				<label for="desc" class="form-label">Popis</label>
+			</div>
+		</div>
+
+		<datalist id="datalistOptionsUsers">
+			@foreach (var user in Model.Users)
+			{
+				<option value="@user"></option>
+			}
+		</datalist>
+		@for (var i = 0; i < Model.Results.Count; i++)
+		{
+			<div class="mb-3">
+				<div class="d-flex">
+					<div class="form-floating flex-fill me-2">
+						<input class="form-control" list="datalistOptionsUsers" asp-for="@Model.Results[i].PlayerName" id="player@(i + 1)">
+						<label for="player@(i + 1)" class="form-label">Hrac @(i + 1)</label>
+					</div>
+					<div class="form-floating flex-fill ms-2">
+						<input type="text" class="form-control" asp-for="@Model.Results[i].PlayerInfo" id="playerInfo@(i + 1)">
+						<label for="playerInfo@(i + 1)" class="form-label">Info (rasa, frakcia, postava ... )</label>
+					</div>
+				</div>
+				<span asp-validation-for="@Model.Results[i].PlayerName" class="text-danger"></span>
+			</div>
+		}
+
+		<div class="mb-3">
+			<div class="form-floating flex-fill">
+				<select class="form-select" id="locationsList" asp-items="@Model.Locations" asp-for="SelectedLocationId">
+				</select>
+				<label for="locationsList" class="form-label">Miesto</label>
+			</div>
+		</div>
+
+		<div class="d-flex mb-3">
+			<div class="form-floating flex-fill me-2">
+				<input type="datetime-local" class="form-control" id="start" step="any" asp-for="StartTime">
+				<label for="start">Cas zacatia hry</label>
+			</div>
+		</div>
+
+		<div class="d-flex mb-3 form-floating flex-fill">
+			<div class="me-2">
+				<button type="submit" name="submitButton" value="startGame" class="btn btn-primary">
+					Začať hru
+				</button>
+			</div>
+			<div class="ms-2">
+				<button type="submit" name="submitButton" value="recordScore" class="btn btn-primary">
+					Zapísať skóre
+				</button>
+			</div>
+		</div>
+	</form>
+</div>

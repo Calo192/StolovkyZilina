@@ -1,0 +1,186 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using StolovkyZilina.Models.ViewModels;
+@model List<StolovkyZilina.Models.ViewModels.PlayViewModel>
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 mb-5 py-2">
+	<div class="container d-flex justify-content-between align-items-center">
+		<h1>Stolové hry</h1>
+		@if (signInManager.IsSignedIn(User))
+		{
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGamePlayModal">
+				Nová partia
+			</button>
+		}
+	</div>
+</div>
+
+
+<div class="container">	
+	@foreach (var gamePlay in Model)
+	{
+		<div class="card mb-5 shadow">
+			<div class="card-header text-center">
+				<a class="d-block" asp-area="" asp-controller="Game" asp-action="Index" asp-route-urlHandle="@gamePlay.GameUrlHandle">
+					<h5>@gamePlay.GameName</h5>
+				</a>
+			</div>
+			<div class="row g-0">
+				<div class="col-md-3">
+					@if (gamePlay.GameFeaturedImage != null)
+					{
+						<a asp-area="" asp-controller="Game" asp-action="Index" asp-route-urlHandle="@gamePlay.GameUrlHandle">
+							<img src="data:image/png;base64,@Convert.ToBase64String(gamePlay.GameFeaturedImage)" class="img-fluid p-2" style="max-height: 175px; max-width: 175px" alt="@gamePlay.GameName">
+						</a>
+					}
+					else
+					{
+						<a asp-area="" asp-controller="Game" asp-action="Index" asp-route-urlHandle="@gamePlay.GameUrlHandle">
+							<img src="~/Resources/Images/gameCover.jpeg" class="img-fluid p-2" style="max-height: 175px; max-width: 175px" alt="@gamePlay.GameName">
+						</a>
+					}
+				</div>
+				<div class="col-md-5">
+
+					@foreach (var player in gamePlay.Players)
+					{
+						<div class="item">
+
+							@if (player.PlayerImage != null)
+							{
+								<a asp-area=""
+								   asp-controller="Account"
+								   asp-action="Profile"
+								   asp-route-userName="@player.UserName">
+									@if (player.Score > 0 && (gamePlay.Players.First() == player || player.Score == gamePlay.Players.First().Score))
+									{
+										<i class="bi bi-trophy-fill notify-badge text-primary"></i>
+									}
+									@if (gamePlay.IsOnPointsGame)
+									{
+										<img alt="@player.UserName" title="@player.UserName: @player.Score" class="rounded-circle mx-2 my-2 shadow" width="55" src="data:image/png;base64,@Convert.ToBase64String(player.PlayerImage)">
+									}
+									else
+									{
+										<img alt="@player.UserName" title="@player.UserName" class="rounded-circle mx-2 my-2 shadow" width="55" src="data:image/png;base64,@Convert.ToBase64String(player.PlayerImage)">
+									}
+								</a>
+							}
+							else
+							{
+								@if (player.IsGuest)
+								{
+									@if (player.Score > 0 && (gamePlay.Players.First() == player || player.Score == gamePlay.Players.First().Score))
+									{
+										<i class="bi bi-trophy-fill notify-badge text-primary"></i>
+									}
+									@if (gamePlay.IsOnPointsGame)
+									{
+										<img alt="@player.UserName" title="@player.UserName: @player.Score" class="rounded-circle mx-2 my-2 shadow" width="55" src="~/Resources/Images/meeple.jpeg">
+									}
+									else
+									{
+										<img alt="@player.UserName" title="@player.UserName" class="rounded-circle mx-2 my-2 shadow" width="55" src="~/Resources/Images/meeple.jpeg">
+									}
+								}
+								else
+								{
+									<a asp-area=""
+									   asp-controller="Account"
+									   asp-action="Profile"
+									   asp-route-userName="@player.UserName">
+										@if (player.Score > 0 && (gamePlay.Players.First() == player || player.Score == gamePlay.Players.First().Score))
+										{
+											<i class="bi bi-trophy-fill notify-badge text-primary"></i>
+										}
+										@if (gamePlay.IsOnPointsGame)
+										{
+											<img alt="@player.UserName" title="@player.UserName: @player.Score" class="rounded-circle mx-2 my-2 shadow" width="55" src="~/Resources/Images/meeple.jpeg">
+										}
+										else
+										{
+											<img alt="@player.UserName" title="@player.UserName" class="rounded-circle mx-2 my-2 shadow" width="55" src="~/Resources/Images/meeple.jpeg">
+										}
+									</a>
+								}
+							}
+
+						</div>
+					}
+
+				</div>
+				<div class="col-md-4 p-2">
+					<dl class="row">
+						<dt class="col-6">Stav</dt>
+						@if (@gamePlay.GetState() == GameState.Plánovaná.ToString())
+						{
+							<dd class="col-6 text-info">@gamePlay.GetState()</dd>
+						}
+						@if (@gamePlay.GetState() == GameState.Ukončená.ToString())
+						{
+							<dd class="col-6 text-success">@gamePlay.GetState()</dd>
+						}
+						else if (@gamePlay.GetState() == GameState.Rozohraná.ToString())
+						{
+							<dd class="col-6 text-warning">@gamePlay.GetState()</dd>
+						}
+						else if (@gamePlay.GetState() == GameState.Nedohraná.ToString())
+						{
+							<dd class="col-6 text-danger">@gamePlay.GetState()</dd>
+						}
+						@if (gamePlay.EndTime != null && gamePlay.EndTime != default(DateTime))
+						{
+							<dt class="col-6">Trvanie</dt>
+							<dd class="col-6">@($"{(int)(gamePlay.EndTime - gamePlay.StartTime)?.TotalHours}h{(gamePlay.EndTime - gamePlay.StartTime)?.Minutes}m")</dd>
+						}
+
+						@if (gamePlay.Location != null)
+						{
+							<dt class="col-6">Miesto</dt>
+							<dd class="col-6">@gamePlay.Location.Name</dd>
+						}
+					</dl>
+					<a class="btn btn-outline-primary" asp-area=""
+					   asp-controller="Plays"
+					   asp-action="Detail"
+					   asp-route-id="@gamePlay.Id" class="card-link">Detail</a>
+				</div>
+			</div>
+			<div class="card-footer text-secondary text-center">
+				@gamePlay.GetBeforeTimeText()
+			</div>
+		</div>
+	}
+
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="newGamePlayModal" tabindex="-1" aria-labelledby="label" aria-hidden="true">
+	<form asp-area=""
+		  asp-controller="Plays"
+		  asp-action="Add"
+		  method="get">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="label">Kolko hracov bude hrat?</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="form-floating flex-fill">
+						<input type="number" class="form-control" id="playerCount" name="playerCount" min="1" value="3">
+						<label for="playerCount">Pocet hracov</label>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-outline-primary">Pokracovat</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>

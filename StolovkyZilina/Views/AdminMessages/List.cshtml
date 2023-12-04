@@ -1,0 +1,96 @@
+﻿@using StolovkyZilina.Util;
+@model List<StolovkyZilina.Models.ViewModels.AdminMessageViewModel>
+@{
+	var distinctStatuses = new int[] { 0, 1, 2 };
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+	<div class="container">
+		<h1>Správy - Admin</h1>
+	</div>
+</div>
+
+<div class="container py-5">
+	<form method="get" asp-controller="AdminMessages" asp-action="List" id="filterForm">
+		<div class="mb-3">
+			<label for="statusFilter" class="form-label">Status filter</label>
+			<select class="form-select" id="statusFilter" name="status">
+				<option value="">Všetky</option>
+				@foreach (var status in distinctStatuses)
+				{
+					@if (Model.All(m => m.Status == status))
+					{
+						<option value="@status" selected>@NumberToTextUtil.StatusToString(status)</option>
+					}
+					else
+					{
+						<option value="@status">@NumberToTextUtil.StatusToString(status)</option>
+					}
+				}
+			</select>
+		</div>
+	</form>
+
+	<script>
+		document.getElementById("statusFilter").addEventListener("change", function () {
+			document.getElementById("filterForm").submit();
+		});
+	</script>
+	<table class="table">
+		<thead>
+			<tr>
+				<td>
+					Dátum
+				</td>
+				<td>
+					Autor
+				</td>
+				<td>
+					Predmet
+				</td>
+				<td>
+					Typ
+				</td>
+				<td>
+					Status
+				</td>
+				<td>
+					<div class="d-flex container">
+						<div class="flex-fill">
+						<form method="get" asp-controller="AdminMessages" asp-action="Send">
+								<button class="btn btn-primary w-100" type="submit">Nová správa</button>
+						</form>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var message in Model)
+			{
+				<tr>
+					<td>@message.Date.ToShortDateString()</td>
+					<td>@message.Author</td>
+					<td class="text-truncate" style="max-width: 150px;">@message.Subject</td>
+					<td>@NumberToTextUtil.MessageTypeToString(message.Type)</td>
+					<td>@NumberToTextUtil.StatusToString(message.Status)</td>
+					<td>
+						<div class="d-flex container">
+							<div class="flex-fill me-2">
+								<form method="get" asp-area="" asp-controller="AdminMessages" asp-action="Detail" asp-route-id="@message.Id">
+									<button class="btn btn-primary w-100" type="submit">Detail</button>
+								</form>
+							</div>
+
+							<div class="flex-fill">
+								<form method="get" asp-area="" asp-controller="AdminMessages" asp-action="Delete" asp-route-id="@message.Id">
+									<button class="btn btn-outline-danger w-100" type="submit">Odstrániť</button>
+								</form>
+							</div>
+						</div>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

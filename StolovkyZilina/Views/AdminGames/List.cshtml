@@ -1,0 +1,70 @@
+﻿@model List<StolovkyZilina.Models.Domain.Game>
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1>Hry - Admin</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    @if (Model != null && Model.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <td></td>
+                    <td>
+                        Nazov
+                    </td>
+                    <td>
+                        Schvalena
+                    </td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var game in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (game.FeaturedImage != null)
+                            {
+                                <img src="data:image/png;base64,@Convert.ToBase64String(game.FeaturedImage)" class="object-fit-contain border rounded" style="height: 100px" alt="@game.Name">
+                            }
+                            else
+                            {
+                                <img src="https://www.svgrepo.com/show/340721/no-image.svg" class="object-fit-contain border rounded" style="height: 100px" alt="@game.Name">
+                            }
+                        </td>
+                        <td>
+                            @game.Name
+                        </td>
+                        <td>
+                            @if (@game.Approved)
+                            {
+                                <p class="text-success">Schvalena</p>
+                            }
+                            else
+                            {
+                                <p class="text-danger">Caka na schvalenie</p>
+                            }
+                        </td>
+                        <td>
+                            <a asp-area="" asp-controller="AdminGames" asp-action="Edit" asp-route-id="@game.Id">
+                                Upravit
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Vies co ma spolocne tvoja penazenka a tato tabulka?</p>
+    }
+
+
+</div>

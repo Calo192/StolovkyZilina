@@ -1,0 +1,109 @@
+﻿@model List<StolovkyZilina.Models.Domain.Location>
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 mb-5 py-2">
+	<div class="container">
+		<h1>Miesta, kde sa stretávame</h1>
+	</div>
+</div>
+
+
+<div class="container">
+	@if (Model != null && Model.Any())
+	{
+		var x = 1;
+		foreach (var location in Model)
+		{
+			if (x > 0)
+			{
+				<div class="row list-project">
+					<div class="col-md-7 mx-auto">
+						@Html.Raw(location.GoogleMapsLink)
+					</div>
+					<!-- / column -->
+					<div class="col-md-5">
+						<div class="project-info-box mt-0">
+							<h5>@location.Name</h5>
+							<p>@location.ShortDesc</p>
+						</div>
+						<!-- / project-info-box -->
+
+						<div class="project-info-box mb-10">
+							<p><b>Mesto:</b> @location.City, @location.PostalCode</p>
+							<p><b>Ulica:</b> @location.Street, @location.BuildingNumber</p>
+							@if (!string.IsNullOrEmpty(location.FloorNumber))
+							{
+								<p><b>Poschodie:</b> @location.FloorNumber</p>
+							}
+							@if (!string.IsNullOrEmpty(location.DoorNumer))
+							{
+								<p><b>Doplnujuce:</b> @location.DoorNumer</p>
+							}
+							@if (@location.Space == 0)
+							{
+								<p><b>Herne priestory:</b> Male</p>
+							}
+							else if (@location.Space == 1)
+							{
+								<p><b>Herne priestory:</b> Stredne</p>
+							}
+							else
+							{
+								<p><b>Herne priestory:</b> Velke</p>
+							}
+						</div>
+					</div>
+				</div>
+
+				<div class="spacer-line-fw border-secondary opc-25 mt-30 mb-30">&nbsp;</div>
+			}
+			else
+			{
+				<div class="row list-project">
+					<div class="col-md-5 tablet-top">
+						<div class="project-info-box mt-0">
+							<h5>@location.Name</h5>
+							<p>@location.ShortDesc</p>
+						</div>
+
+						<div class="project-info-box mb-10">
+							<p><b>Mesto:</b> @location.City, @location.PostalCode</p>
+							<p><b>Ulica:</b> @location.Street, @location.BuildingNumber</p>
+							@if (!string.IsNullOrEmpty(location.FloorNumber))
+							{
+								<p><b>Poschodie:</b> @location.FloorNumber</p>
+							}
+							@if (!string.IsNullOrEmpty(location.DoorNumer))
+							{
+								<p><b>Doplnujuce:</b> @location.DoorNumer</p>
+							}
+							@if (@location.Space == 0)
+							{
+								<p><b>Herne priestory:</b> Male</p>
+							}
+							else if (@location.Space == 1)
+							{
+								<p><b>Herne priestory:</b> Stredne</p>
+							}
+							else
+							{
+								<p><b>Herne priestory:</b> Velke</p>
+							}
+						</div>
+					</div>
+
+					<div class="col-md-7">
+						@Html.Raw(location.GoogleMapsLink)
+					</div>
+				</div>
+				<div class="spacer-line-fw border-secondary opc-25 mt-30 mb-30">&nbsp;</div>
+			}
+			x *= -1;
+		}
+	}
+	<div class="mt-5">
+		Nenašiel si miesto kam si chodievaš zahrať? Môžeš ho <a asp-area="" asp-controller="Info" asp-action="Add">PRIDAŤ</a>!
+	</div>
+</div>
+

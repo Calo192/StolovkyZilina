@@ -10,11 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//builder.Services.AddDbContext<StolovkyDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyDbConnectionString")));
-//builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyAuthDbConnectionString")));
+builder.Services.AddDbContext<StolovkyDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyDbConnectionString")));
+builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyAuthDbConnectionString")));
 
-builder.Services.AddDbContext<StolovkyDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyDbConnectionStringServer")));
-builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyAuthDbConnectionStringServer")));
+//builder.Services.AddDbContext<StolovkyDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyDbConnectionStringServer")));
+//builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyAuthDbConnectionStringServer")));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AuthDbContext>();
 

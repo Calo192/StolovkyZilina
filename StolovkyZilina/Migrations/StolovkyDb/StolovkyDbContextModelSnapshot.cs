@@ -84,6 +84,36 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                     b.ToTable("AdminMessages");
                 });
 
+            modelBuilder.Entity("StolovkyZilina.Models.Domain.AuctionOffer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("IdealPlayerCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Offer")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AuctionOffers");
+                });
+
             modelBuilder.Entity("StolovkyZilina.Models.Domain.Comment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -134,6 +164,9 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AuctionType")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("ContentId")
                         .HasColumnType("uniqueidentifier");
@@ -198,6 +231,9 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                     b.Property<byte[]>("FeaturedImage")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<Guid?>("GameCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("MaxPlayerCount")
                         .HasColumnType("int");
 
@@ -228,7 +264,24 @@ namespace StolovkyZilina.Migrations.StolovkyDb
 
                     b.HasIndex("ContentId");
 
+                    b.HasIndex("GameCategoryId");
+
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("StolovkyZilina.Models.Domain.GameCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GameCategories");
                 });
 
             modelBuilder.Entity("StolovkyZilina.Models.Domain.GameLanguage", b =>
@@ -455,6 +508,30 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                     b.ToTable("ParticipationVotes");
                 });
 
+            modelBuilder.Entity("StolovkyZilina.Models.Domain.PlayerMmr", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Mmr")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PlayerMmrs");
+                });
+
             modelBuilder.Entity("StolovkyZilina.Models.Domain.PlayerPlayResult", b =>
                 {
                     b.Property<Guid>("Id")
@@ -466,6 +543,9 @@ namespace StolovkyZilina.Migrations.StolovkyDb
 
                     b.Property<string>("GuestPlayerName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MmrDiff")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("PlayerId")
                         .HasColumnType("uniqueidentifier");
@@ -546,6 +626,9 @@ namespace StolovkyZilina.Migrations.StolovkyDb
 
                     b.Property<byte[]>("FeaturedImage")
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("Influence")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -657,6 +740,25 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("StolovkyZilina.Models.Domain.AuctionOffer", b =>
+                {
+                    b.HasOne("StolovkyZilina.Models.Domain.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StolovkyZilina.Models.Domain.UserProfile", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("StolovkyZilina.Models.Domain.Comment", b =>
                 {
                     b.HasOne("StolovkyZilina.Models.Domain.Content", null)
@@ -693,7 +795,13 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("StolovkyZilina.Models.Domain.GameCategory", "GameCategory")
+                        .WithMany()
+                        .HasForeignKey("GameCategoryId");
+
                     b.Navigation("Content");
+
+                    b.Navigation("GameCategory");
                 });
 
             modelBuilder.Entity("StolovkyZilina.Models.Domain.GameOwner", b =>
@@ -795,6 +903,25 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("StolovkyZilina.Models.Domain.PlayerMmr", b =>
+                {
+                    b.HasOne("StolovkyZilina.Models.Domain.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StolovkyZilina.Models.Domain.UserProfile", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StolovkyZilina.Models.Domain.PlayerPlayResult", b =>

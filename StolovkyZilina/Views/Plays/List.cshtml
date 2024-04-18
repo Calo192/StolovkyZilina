@@ -8,7 +8,7 @@
 
 <div class="bg-secondary bg-opacity-10 mb-5 py-2">
 	<div class="container d-flex justify-content-between align-items-center">
-		<h1>Stolové hry</h1>
+		<h1>Herné partie</h1>
 		@if (signInManager.IsSignedIn(User))
 		{
 			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGamePlayModal">
@@ -140,7 +140,17 @@
 						@if (gamePlay.Location != null)
 						{
 							<dt class="col-6">Miesto</dt>
-							<dd class="col-6">@gamePlay.Location.Name</dd>
+							<dd class="col-6"><a href="@("https://www.google.com/maps?q="+gamePlay.Location.City+","+gamePlay.Location.Name)" target="_blank">@gamePlay.Location.Name</a></dd>
+						}
+						@if (gamePlay.Event != null)
+						{
+							<dt class="col-6">Udalosť</dt>
+							<dd class="col-6">
+								<a asp-area=""
+								   asp-controller="Events"
+								   asp-action="Detail"
+								   asp-route-id="@gamePlay.Event.Id">@gamePlay.Event.Name</a>
+							</dd>
 						}
 					</dl>
 					<a class="btn btn-outline-primary" asp-area=""
@@ -178,7 +188,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="submit" class="btn btn-outline-primary">Pokracovat</button>
+					<button type="submit" class="btn btn-outline-primary">Pokračovať</button>
 				</div>
 			</div>
 		</div>

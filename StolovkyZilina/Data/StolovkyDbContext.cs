@@ -27,5 +27,9 @@ namespace StolovkyZilina.Data
 		public DbSet<ParticipationVote> ParticipationVotes { get; set; }
 		public DbSet<GamePoll> GamePolls { get; set; }
 		public DbSet<GameVote> GameVotes { get; set; }
+		public DbSet<PlayerMmr> PlayerMmrs { get; set; }
+		public DbSet<AuctionOffer> AuctionOffers { get; set; }
+		public DbSet<GameCategory> GameCategories { get; set; }
+		
 	}
 }

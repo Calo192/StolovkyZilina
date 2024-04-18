@@ -10,7 +10,7 @@
 		<h1>Stolové hry</h1>
 		@if (signInManager.IsSignedIn(User) && User.IsInRole("UserP2"))
 		{
-			<a class="btn btn-primary" asp-area="" asp-controller="AdminBlogPosts" asp-action="Add">
+			<a class="btn btn-primary" asp-area="" asp-controller="Games" asp-action="Add">
 				Nová hra
 			</a>
 		}

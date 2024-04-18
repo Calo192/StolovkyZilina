@@ -13,6 +13,7 @@ namespace StolovkyZilina.Models.Domain
 		public int? PrefferedPlaytime { get; set; }
 		public string? PrefferedPlayDay { get; set; }
 		public int? PrefferedPlayerCount { get; set; }
+		public int Influence { get; set; }
 		public string? City { get; set; }
 		public string? Desc { get; set; }
         public List<GameOwner> GamesOwned { get; set; }

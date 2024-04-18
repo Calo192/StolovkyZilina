@@ -19,6 +19,18 @@
             <input class="form-control" type="file" id="fileInput" name="fileInput">
         </div>
 
+        <div class=" mb-3">
+            <label class="form-label">Aukcia</label>
+            <div class="btn-group d-flex justify-content-center text-center" role="group">
+                <input type="radio" class="btn-check" id="btnradio3" name="AuctionOption" asp-for="AuctionOption" value="0" autocomplete="off">
+                <label class="btn btn-outline-danger" for="btnradio3">Žiadna</label>
+                <input type="radio" class="btn-check" id="btnradio2" name="AuctionOption" asp-for="AuctionOption" value="1" autocomplete="off">
+                <label class="btn btn-outline-primary" for="btnradio2">Individuálna</label>
+                <input type="radio" class="btn-check" id="btnradio1" name="AuctionOption" asp-for="AuctionOption" value="2" autocomplete="off">
+                <label class="btn btn-outline-primary" for="btnradio1">Kumulatívna</label>
+            </div>
+        </div>
+
         <div class="form-floating mb-3">
             <textarea class="form-control" placeholder="Krátky popis" id="shortdesc" asp-for="ShortDescription"></textarea>
             <label for="shortdesc">Krátky popis</label>

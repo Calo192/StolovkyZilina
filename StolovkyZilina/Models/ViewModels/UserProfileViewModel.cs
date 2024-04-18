@@ -10,12 +10,14 @@ namespace StolovkyZilina.Models.ViewModels
 		public string Alias { get; set; }
 		public string? Name { get; set; }
 		public string? Surname { get; set; }
+		public string? Role { get; set; }
 		public string? City { get; set; }
 		public string? Desc { get; set; }
 		public string? Email { get; set; }
 		public string? PhoneNumber { get; set; }
 		public byte[]? FeaturedImage { get; set; }
 		public int? PrefferedDifficulty { get; set; }
+		public int Influence { get; set; }
 		public int? PrefferedPlaytime { get; set; }
 		public int? PrefferedPlayerCount { get; set; }
 		public string Password { get; set; }
@@ -53,13 +55,15 @@ namespace StolovkyZilina.Models.ViewModels
 			}
 		}
 
-		public UserProfileViewModel(UserProfile userProfile, string? email, string? phoneNumber, string alias)
+		public UserProfileViewModel(UserProfile userProfile, string? email, string? phoneNumber, string alias, string? role = "")
 		{
 			this.Id = userProfile.Id;
 			this.UserId = userProfile.UserId;
 			this.Alias = alias;
             this.Name = userProfile.Name;
 			this.Surname = userProfile.Surname;
+			this.Influence = userProfile.Influence;
+			this.Role = role;
 			this.PrefferedPlaytime = userProfile.PrefferedPlaytime;
 			this.PrefferedPlayerCount = userProfile.PrefferedPlayerCount;
 			this.PrefferedDifficulty = userProfile.PrefferedDifficulty;

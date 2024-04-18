@@ -21,6 +21,11 @@
             <label for="author">Autor</label>
         </div>
 
+        <div class="form-floating mb-3">
+            <select class="form-select" id="cat" aria-label="Jazyk" asp-items="@Model.Categories" asp-for="SelectedCategory"></select>
+            <label for="cat" class="form-label">Kategória</label>
+        </div>
+
         <div class="mb-3">
             <label for="formFile" class="form-label">Titulny obrazok</label>
             <input class="form-control" type="file" id="fileInput" name="fileInput">

@@ -7,6 +7,7 @@ namespace StolovkyZilina.Models.Requests
     {
 		public Guid Id { get; set; }
 		public Guid ContentId { get; set; }
+		public Guid? EventId { get; set; }
 		public List<PlayerPlayResultModel> Results { get; set; }
         public string? Desc { get; set; }
         public DateTime? StartTime { get; set; }

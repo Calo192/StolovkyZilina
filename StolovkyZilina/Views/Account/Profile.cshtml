@@ -32,7 +32,7 @@
 		<div class="col-md-5 border-right">
 			<div class="p-3 py-5">
 				<div class="d-flex justify-content-between align-items-center mb-3">
-					<h4 class="text-right">Osobne udaje</h4>
+					<h4 class="text-right">Osobné údaje</h4>
 				</div>
 				<dl class="row">
 					@if (!string.IsNullOrEmpty(Model.Name))
@@ -65,10 +65,23 @@
 						<dd class="col-sm-9">@Model.Desc</dd>
 					}
 				</dl>
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h4 class="text-right">Členské údaje</h4>
+				</div>
+				<dl class="row">
+					@if (!string.IsNullOrEmpty(Model.Role))
+					{
+						<dt class="col-sm-3">Status</dt>
+						<dd class="col-sm-9">@Model.Role</dd>
+					}
+					@if (Model.Influence > 0)
+					{
+						<dt class="col-sm-3">Mince</dt>
+						<dd class="col-sm-9">@Model.Influence</dd>
+					}
+				</dl>
+
 			</div>
-
-
-
 		</div>
 		<div class="col-md-4">
 			<div class="p-3 py-5">

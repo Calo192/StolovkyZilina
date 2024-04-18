@@ -111,7 +111,7 @@ namespace StolovkyZilina.Repositories
 				.Include(x => x.Content.Likes)
 				.Include(x => x.Content.Comments)
 				.Include(x => x.ParticipationVotes)
-				.Include(x => x.GamePolls).ThenInclude(x => x.GameVotes)
+                .Include(x => x.GamePolls).ThenInclude(x => x.GameVotes)
 				.Include(x => x.GamePolls).ThenInclude(x => x.GamesInPoll)
 				.FirstOrDefaultAsync(x => x.Name == name);
 		}
@@ -127,12 +127,13 @@ namespace StolovkyZilina.Repositories
 				existingEvent.ShortDescription = item.ShortDescription;
 				existingEvent.Time = item.Time;
 				existingEvent.MakeGamesSuggestion = item.MakeGamesSuggestion;
-				existingEvent.LocationId = item.LocationId;
+                existingEvent.AuctionType = item.AuctionType;
+                existingEvent.LocationId = item.LocationId;
 				existingEvent.Content = item.Content;
 				existingEvent.ParticipationVotes = item.ParticipationVotes;
-				existingEvent.GamePolls = item.GamePolls;
+                existingEvent.GamePolls = item.GamePolls;
 
-				await stolovkyDbContext.SaveChangesAsync();
+                await stolovkyDbContext.SaveChangesAsync();
 				return existingEvent;
 			}
 			return null;

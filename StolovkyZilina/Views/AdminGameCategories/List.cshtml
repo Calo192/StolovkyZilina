@@ -1,0 +1,49 @@
+﻿@model StolovkyZilina.Models.ViewModels.AdminCategoriesViewModel
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+	<div class="container">
+		<h1>Herné kategórie - Admin</h1>
+	</div>
+</div>
+
+<div class="container py-5">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Kategória</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<form method="post">
+			<tr>
+				<td><input type="text" class="form-control" id="displayName" asp-for="DisplayName" /></td>
+				<td>
+					<div class="d-flex container">
+						<button type="submit" class="btn btn-primary">Pridat</button>
+					</div>
+				</td>
+			</tr>
+			</form>
+			@foreach (var cat in Model.Categories)
+			{
+				<tr>
+					<td>@cat.Name</td>
+					<td>
+						<div class="d-flex container">
+							<form method="get" asp-area="" asp-controller="AdminGameCategories" asp-action="Edit" asp-route-id="@cat.Id">
+								<button class="btn btn-outline-primary me-2" type="submit">Upravit</button>
+							</form>
+
+							<form method="get" asp-area="" asp-controller="AdminGameCategories" asp-action="Delete" asp-route-id="@cat.Id">
+								<button class="btn btn-outline-danger" type="submit">Odstranit</button>
+							</form>
+						</div>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

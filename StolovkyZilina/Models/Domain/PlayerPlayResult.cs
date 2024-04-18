@@ -4,6 +4,7 @@
 	{
 		public Guid Id { get; set; }
 		public int Result { get; set; }
+		public int MmrDiff { get; set; }
 		public Guid? PlayerId { get; set; }
 		public UserProfile? Player { get; set; }
 		public string? GuestPlayerName { get; set; }

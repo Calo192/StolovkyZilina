@@ -22,6 +22,11 @@
         </div>
 
         <div class="form-floating mb-3">
+            <select class="form-select" id="cat" aria-label="Jazyk" asp-items="@Model.Categories" asp-for="SelectedCategory"></select>
+            <label for="cat" class="form-label">Kategória</label>
+        </div>
+
+        <div class="form-floating mb-3">
             @if (Model.FeaturedImage != null)
             {
                 <div class="mb-3 d-flex">

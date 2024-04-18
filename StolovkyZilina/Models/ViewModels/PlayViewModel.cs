@@ -6,6 +6,8 @@ namespace StolovkyZilina.Models.ViewModels
 	{
 		public string GameName { get; set; }
 		public Guid GameId { get; set; }
+		public Guid? EventId { get; set; }
+		public Event? Event { get; set; }
 		public string GameUrlHandle { get; set; }
 		public string? Desc { get; set; }
 		public byte[]? GameFeaturedImage { get; set; }

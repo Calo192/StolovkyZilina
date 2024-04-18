@@ -5,6 +5,7 @@
 		public Guid Id { get; set; }
 		public string Name { get; set; }
 		public bool MakeGamesSuggestion { get; set; }
+		public int AuctionType { get; set; }
 		public Guid LocationId { get; set; }
 		public Location Location { get; set; }
 		public DateTime Time { get; set; }

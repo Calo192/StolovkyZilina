@@ -147,6 +147,9 @@ namespace StolovkyZilina.Controllers
 		public async Task<IActionResult> Profile(string userName)
 		{
 			var user = await userManager.FindByNameAsync(userName);
+			var roles = await userManager.GetRolesAsync(user);
+			var highestRole = Constants.GetHighestRole(roles.ToList());
+
 			if (user != null)
 			{
 				var userProfile = await userProfileRepository.GetAsync(Guid.Parse(user.Id));
@@ -154,7 +157,7 @@ namespace StolovkyZilina.Controllers
 				{
 					userProfile = await userProfileRepository.AddAsync(new UserProfile() { UserId = Guid.Parse(user.Id) });
 				}
-				return View(new UserProfileViewModel(userProfile, user.Email, user.PhoneNumber, user.UserName));
+				return View(new UserProfileViewModel(userProfile, user.Email, user.PhoneNumber, user.UserName, Constants.TranslateRole(highestRole)));
 			}
 			return RedirectToAction("Index", "Home");
 		}

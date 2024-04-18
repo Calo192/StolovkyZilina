@@ -10,8 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<StolovkyDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyDbConnectionString")));
-builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyAuthDbConnectionString")));
+//builder.Services.AddDbContext<StolovkyDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyDbConnectionString")));
+//builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyAuthDbConnectionString")));
+
+builder.Services.AddDbContext<StolovkyDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyDbConnectionStringServer")));
+builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StolovkyAuthDbConnectionStringServer")));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AuthDbContext>();
 
@@ -38,6 +41,9 @@ builder.Services.AddScoped<IRepository<Event>, EventRepository>();
 builder.Services.AddScoped<IRepository<ParticipationVote>, ParticipationRepository>();
 builder.Services.AddScoped<IRepository<GamePoll>, GamePollRepository>();
 builder.Services.AddScoped<IRepository<GameVote>, GameVoteRepository>();
+builder.Services.AddScoped<IRepository<PlayerMmr>, PlayerMmrRepository>();
+builder.Services.AddScoped<IRepository<AuctionOffer>, AuctionOfferRepository>();
+builder.Services.AddScoped<IRepository<GameCategory>, GameCategoryRepository>();
 
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IGameRelationRepository<GameOwner>, GameOwnerRepository>();

@@ -8,6 +8,7 @@ using StolovkyZilina.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using Azure.Core;
+using Microsoft.Extensions.Logging;
 
 namespace StolovkyZilina.Controllers
 {
@@ -16,7 +17,9 @@ namespace StolovkyZilina.Controllers
 		private readonly ITagRepository tagRepository;
 		private readonly IRepository<Location> locationRepository;
 		private readonly IRepository<Event> eventRepository;
-		private readonly IGameRelationRepository<GameOwner> gameRelationRepository;
+		private readonly IRepository<GamePlay> gamePlayRepository;
+        private readonly IRepository<AuctionOffer> auctionOfferRepository;
+        private readonly IGameRelationRepository<GameOwner> gameRelationRepository;
 		private readonly IRepository<Game> gameRepository;
 		private readonly IRepository<GameVote> gameVoteRepository;
 		private readonly IRepository<Feed> feedRepository;
@@ -33,7 +36,9 @@ namespace StolovkyZilina.Controllers
 		public EventsController(ITagRepository tagRepository,
 			IRepository<Location> locationRepository,
 			IRepository<Event> eventRepository,
-			IRepository<Game> gameRepository,
+            IRepository<GamePlay> gamePlayRepository,
+            IRepository<AuctionOffer> auctionOfferRepository,
+            IRepository<Game> gameRepository,
 			IRepository<GameVote> gameVoteRepository,
 			IRepository<Feed> feedRepository,
 			IRepository<GamePoll> gamePollRepository,
@@ -50,7 +55,9 @@ namespace StolovkyZilina.Controllers
 			this.tagRepository = tagRepository;
 			this.locationRepository = locationRepository;
 			this.eventRepository = eventRepository;
-			this.gameRelationRepository = gameRelationRepository;
+			this.gamePlayRepository = gamePlayRepository;
+            this.auctionOfferRepository = auctionOfferRepository;
+            this.gameRelationRepository = gameRelationRepository;
 			this.gameRepository = gameRepository;
 			this.gameVoteRepository = gameVoteRepository;
 			this.feedRepository = feedRepository;
@@ -119,7 +126,8 @@ namespace StolovkyZilina.Controllers
 				Description = request.Description,
 				ShortDescription = request.ShortDescription,
 				Name = request.Name,
-				Time = request.Time,
+				AuctionType = request.AuctionOption,
+                Time = request.Time,
 				MakeGamesSuggestion = request.MakeGamesSuggestion
 			};
 
@@ -198,6 +206,7 @@ namespace StolovkyZilina.Controllers
 				Location = selectedEvent.Location,
 				LocationId = selectedEvent.LocationId,
 				MakeGamesSuggestion = selectedEvent.MakeGamesSuggestion,
+				AuctionType = selectedEvent.AuctionType,
 				Time = selectedEvent.Time,
 				TotalLikes = totalLikes,
 				ContentId = selectedEvent.ContentId,
@@ -206,6 +215,63 @@ namespace StolovkyZilina.Controllers
 				GamePolls = selectedEvent.GamePolls,
 				CurrentProfileId = await GetUserId()
 			};
+
+			viewModel.Suggestions = await CreateSuggestions(selectedEvent.Id);
+
+			var plays = await gamePlayRepository.GetAllAsync("p_"+ selectedEvent.Id);
+			if (plays.Any())
+			{
+				viewModel.GamePlayViewModels = new List<PlayViewModel>();
+				foreach (var play in plays)
+				{
+					var players = new List<PlayerRecord>();
+					foreach (var player in play.Results)
+					{
+						var isGuest = false;
+						var userName = string.Empty;
+						if (player.PlayerId != null)
+						{
+							var user = await userManager.FindByIdAsync(player.Player.UserId.ToString());
+							userName = user.UserName;
+						}
+						else
+						{
+							isGuest = true;
+							userName = player.GuestPlayerName;
+						}
+
+						players.Add(new PlayerRecord()
+						{
+							UserName = userName,
+							IsGuest = isGuest,
+							Info = player.PlayerInfo,
+							PlayerImage = player?.Player?.FeaturedImage,
+							Score = player.Result
+						});
+					}
+
+					var playModel = new PlayViewModel()
+					{
+						Id = play.Id,
+						ContentId = play.ContentId,
+						EventId = play.EventId,
+						EndTime = play.EndTime,
+						StartTime = play.StartTime,
+						GameFeaturedImage = play.Game.FeaturedImage,
+						GameId = play.Game.Id,
+						GameName = play.Game.Name,
+						GameUrlHandle = play.Game.UrlHandle,
+						Desc = play.Desc,
+						IsOnPointsGame = play.Game.OnPoints,
+						IsCoopGame = play.Game.Cooperative,
+						Location = play.Location,
+						Event = play.Event,
+						Players = players.OrderByDescending(p => p.Score).ToList()
+					};
+
+					viewModel.GamePlayViewModels.Add(playModel);
+				}
+			}
 
 			foreach (var vote in selectedEvent.ParticipationVotes)
 			{
@@ -228,7 +294,11 @@ namespace StolovkyZilina.Controllers
 				}
 			}
 
-			return View(viewModel);
+			var offers = await auctionOfferRepository.GetAllAsync(selectedEvent.Id.ToString());
+
+			viewModel.AuctionBids = offers.ToList();
+
+            return View(viewModel);
 		}
 
 		[HttpPost]
@@ -297,22 +367,13 @@ namespace StolovkyZilina.Controllers
 			return RedirectToAction(nameof(Detail), new { id });
 		}
 
-		[HttpGet]
-		public async Task<IActionResult> CreateGamePoll(Guid id)
+		private async Task<List<GameSuggestionViewModel>> CreateSuggestions(Guid id)
 		{
-			var request = new CreateGamePollRequest();
-			request.EventId = id;
 			var selectedEvent = await eventRepository.GetAsync(id);
+			if (selectedEvent == null) return new List<GameSuggestionViewModel>();
 			var attendees = selectedEvent.ParticipationVotes.Where(p => p.VoteStatus == 2);
 			var attendeesProfiles = new List<UserProfile>();
 			var games = await gameRepository.GetAllAsync();
-			if (games.Any(g => g.Approved))
-			{
-				foreach (var game in games)
-				{
-					if (game.Approved) request.AllValidGameNames.Add(game.Name);
-				}
-			}
 
 			foreach (var attendee in attendees)
 			{
@@ -333,6 +394,7 @@ namespace StolovkyZilina.Controllers
 			}
 
 			var suggestions = new List<GameSuggestionViewModel>();
+			double totalScore = 0;
 			foreach (var relation in relations)
 			{
 				if (!suggestions.Any(s => s.GameId == relation.GameId)
@@ -353,11 +415,51 @@ namespace StolovkyZilina.Controllers
 						if (rel.IsFavorite) suggestionViewModel.Score += 15;
 						if (rel.PlaiyngInterest > 0) suggestionViewModel.Score += rel.PlaiyngInterest * 10;
 					}
-
+					totalScore += suggestionViewModel.Score;
 					suggestions.Add(suggestionViewModel);
 				}
 			}
-			request.Suggestions = suggestions.Where(s => s.Score > 0).OrderByDescending(s => s.Score).TakeLast(attendees.Count()).ToList();
+
+			var orderedrelevant = suggestions.Where(s => s.Score > 0).OrderBy(s => s.Score);
+
+			var relevant = orderedrelevant.TakeLast(attendees.Count());
+
+			foreach(var r in relevant)
+			{
+				r.Score = Math.Round((r.Score/totalScore)*100);
+			}
+
+			return relevant.Where(s => s.Score > 0).OrderByDescending(s => s.Score).ToList();
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> GamePollDetail(Guid id)
+		{
+			var poll = await gamePollRepository.GetAsync(id);
+			var viewModel = new GamePollDetailViewModel();
+			viewModel.PollName = poll.PollName;
+			viewModel.NumberOfVotesPerUser = poll.NumberOfVotesPerUser;
+			viewModel.Event = poll.Event;
+			viewModel.GameVotes = poll.GameVotes;
+			viewModel.GamesInPoll = poll.GamesInPoll;
+			return View(viewModel);
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> CreateGamePoll(Guid id)
+		{
+			var request = new CreateGamePollRequest();
+			request.EventId = id;
+			var games = await gameRepository.GetAllAsync();
+			if (games.Any(g => g.Approved))
+			{
+				foreach (var game in games)
+				{
+					if (game.Approved) request.AllValidGameNames.Add(game.Name);
+				}
+			}
+
+			request.Suggestions = await CreateSuggestions(id);
 
 			return View(request);
 		}
@@ -418,5 +520,50 @@ namespace StolovkyZilina.Controllers
 			
 			return RedirectToAction(nameof(Detail), new { id = eventId });
 		}
-	}
+
+        [HttpGet]
+        public async Task<IActionResult> AuctionBid(Guid id)
+        {
+            var userId = Guid.Parse(userManager.GetUserId(User));
+            var userProfile = await profileRepository.GetAsync(userId);
+
+            var model = new AuctionBidViewModel();
+            model.EventId = id;
+            model.UserId = userProfile.Id;
+            model.MaxBid = userProfile.Influence;
+
+            var games = await gameRepository.GetAllAsync();
+            if (games.Any(g => g.Approved))
+            {
+                foreach (var game in games)
+                {
+                    if (game.Approved)
+                    {
+                        model.AllValidGameNames.Add(game.Name);
+                    }
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AuctionBid(AuctionBidViewModel model)
+        {
+			var game = await gameRepository.GetAsyncByName(model.SelectedGame);
+
+			if (game != null)
+			{
+                var offer = new AuctionOffer();
+                offer.Offer = model.Bid;
+                offer.EventId = model.EventId;
+                offer.UserId = model.UserId;
+				offer.GameId = game.Id;
+				offer.IdealPlayerCount = model.DesiredPlayerCount;
+				await auctionOfferRepository.AddAsync(offer);
+            }
+
+            return RedirectToAction(nameof(Detail), new { id = model.EventId });
+        }
+    }
 }

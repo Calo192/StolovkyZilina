@@ -19,11 +19,9 @@ namespace StolovkyZilina.Models.Requests
 		public bool OnPoints { get; set; }
 		public int? SpaceRequirement { get; set; }
 		public bool Approved { get; set; }
-
-		//display tags
+		public IEnumerable<SelectListItem> Categories { get; set; }
+		public string SelectedCategory { get; set; }
 		public IEnumerable<SelectListItem> Tags { get; set; }
-
-		//collect tags
 		public string[] SelectedTags { get; set; } = Array.Empty<string>();
 
 		public int GetImageSizeInKB()

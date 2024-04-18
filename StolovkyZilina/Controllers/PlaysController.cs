@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 using StolovkyZilina.Data;
 using StolovkyZilina.Models.Domain;
 using StolovkyZilina.Models.Requests;
 using StolovkyZilina.Models.ViewModels;
 using StolovkyZilina.Repositories;
 using StolovkyZilina.Util;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StolovkyZilina.Controllers
 {
@@ -15,6 +17,7 @@ namespace StolovkyZilina.Controllers
 		private readonly IRepository<Game> gameRepository;
 		private readonly IRepository<Location> locationRepository;
 		private readonly IRepository<GamePlay> gamePlayRepository;
+		private readonly IRepository<Event> eventRepository;
 		private readonly IUserRepository userRepository;
 		private readonly IRepository<UserProfile> userProfileRepository;
 		private readonly IContentCommentRepository contentCommentRepository;
@@ -27,6 +30,7 @@ namespace StolovkyZilina.Controllers
 		public PlaysController(IRepository<Game> gameRepository,
 			IRepository<Location> locationRepository,
 			IRepository<GamePlay> gamePlayRepository,
+			IRepository<Event> eventRepository,
 			IUserRepository userRepository,
 			IRepository<UserProfile> userProfileRepository,
 			IContentCommentRepository contentCommentRepository,
@@ -39,6 +43,7 @@ namespace StolovkyZilina.Controllers
 			this.gameRepository = gameRepository;
 			this.locationRepository = locationRepository;
 			this.gamePlayRepository = gamePlayRepository;
+			this.eventRepository = eventRepository;
 			this.userRepository = userRepository;
 			this.userProfileRepository = userProfileRepository;
 			this.contentCommentRepository = contentCommentRepository;
@@ -86,6 +91,7 @@ namespace StolovkyZilina.Controllers
 				{
 					Id = play.Id,
 					ContentId = play.ContentId,
+					EventId = play.EventId,
 					EndTime = play.EndTime,
 					StartTime = play.StartTime,
 					GameFeaturedImage = play.Game.FeaturedImage,
@@ -96,6 +102,7 @@ namespace StolovkyZilina.Controllers
 					IsCoopGame = play.Game.Cooperative,
 					IsOnPointsGame = play.Game.OnPoints,
 					Location = play.Location,
+					Event = play.Event,
 					Players = players.OrderByDescending(p => p.Score).ToList()
 				};
 
@@ -106,7 +113,7 @@ namespace StolovkyZilina.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Add(int playerCount)
+		public async Task<IActionResult> Add(int playerCount, Guid eventId)
 		{
 			var users = await userRepository.GetAll();
 			var model = new GamePlayRequest();
@@ -145,8 +152,18 @@ namespace StolovkyZilina.Controllers
 				model.Locations = updated.Select(location => new SelectListItem { Text = location.Name, Value = location.Id.ToString() });
 			}
 
-			model.StartTime = DateTime.Now;
+			if (eventId != null && eventId != Guid.Empty)
+			{
+				model.EventId = (Guid)eventId;
 
+				var gamingEvent = await eventRepository.GetAsync(eventId);
+				if (gamingEvent != null)
+				{
+					model.SelectedLocationId = gamingEvent.Location.Id.ToString();
+				}
+			}
+
+			model.StartTime = DateTime.Now;
 			return View(model);
 		}
 
@@ -166,6 +183,7 @@ namespace StolovkyZilina.Controllers
 					Desc = addGamePlayRequest.Desc,
 					EndTime = addGamePlayRequest.EndTime,
 					StartTime = addGamePlayRequest.StartTime,
+					EventId = addGamePlayRequest.EventId,
 					GameId = game.Id,
 					Results = new List<PlayerPlayResult>()
 				};
@@ -175,7 +193,7 @@ namespace StolovkyZilina.Controllers
 					play.LocationId = Guid.Parse(addGamePlayRequest.SelectedLocationId);
 				}
 
-				var players = String.Empty;
+				var players = string.Empty;
 				foreach (var result in addGamePlayRequest.Results)
 				{
 					var ppr = await ParseResult(result, play);
@@ -326,6 +344,7 @@ namespace StolovkyZilina.Controllers
 			{
 				Id = id,
 				ContentId = play.ContentId,
+				EventId = play.EventId,
 				EndTime = play.EndTime,
 				StartTime = play.StartTime,
 				GameFeaturedImage = play.Game.FeaturedImage,
@@ -337,6 +356,7 @@ namespace StolovkyZilina.Controllers
 				Comments = commentsForView,
 				GameUrlHandle = play.Game.UrlHandle,
 				Location = play.Location,
+				Event = play.Event,
 				TotalLikes = totalLikes,
 				Players = players.OrderByDescending(p => p.Score).ToList()
 			};
@@ -401,7 +421,7 @@ namespace StolovkyZilina.Controllers
 					PlayerName = playername,
 					PlayerInfo = res.PlayerInfo, 
 					Result = res.Result, 
-					IsWinner = (res.Result > 0 && !res.GamePlay.Game.OnPoints) 
+					IsWinner = (res.Result > 0 && !res.GamePlay.Game.OnPoints) || (res.GamePlay.Game.OnPoints && res.Result == play.Results.Max(result => result.Result))
 				});
 			}
 
@@ -431,6 +451,7 @@ namespace StolovkyZilina.Controllers
 			model.Desc = play.Desc;
 			model.Id = play.Id;
 			model.ContentId = play.ContentId;
+			model.EventId = play.EventId;
 			model.SelectedLocationId = play.LocationId.ToString();
 			model.IsCoopGame = play.Game.Cooperative;
 			model.IsOnPointsGame = play.Game.OnPoints;
@@ -449,12 +470,47 @@ namespace StolovkyZilina.Controllers
 					updateRequest.SelectedLocationId = null;
 				}
 
-				var playDomain = new GamePlay()
+
+				if (updateRequest.EventId != null && updateRequest.EventId != Guid.Empty)
+				{
+                    var playsInEvent = await gamePlayRepository.GetAllAsync("p_" + updateRequest.EventId?.ToString());
+                    if (playsInEvent.Any())
+                    {
+						foreach (var result in updateRequest.Results)
+						{
+                            var user = await userManager.FindByNameAsync(result.PlayerName);
+							if (user != null)
+							{
+                                var profile = await userProfileRepository.GetAsync(Guid.Parse(user.Id));
+								if (profile != null)
+								{
+									if (playsInEvent.Any(p => p.Id != updateRequest.Id && p.Results.Any(r => r.PlayerId == profile.Id)))
+									{
+										if (updateRequest.Results.Max(r => r.Result) == result.Result && 
+											playsInEvent.Any(p => p.Id != updateRequest.Id && p.Results.Where(r => r.PlayerId == profile.Id).All(r => r.Result != p.Results.Max(res => res.Result))))
+										{
+                                            profile.Influence += 1;
+                                            await userProfileRepository.UpdateAsync(profile);
+                                        }
+									}
+									else
+									{
+                                        profile.Influence += result.Result == updateRequest.Results.Max(r => r.Result) ? 4 : 3;
+                                        await userProfileRepository.UpdateAsync(profile);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var playDomain = new GamePlay()
 				{
 					Desc = updateRequest.Desc,
 					StartTime = updateRequest.StartTime,
 					EndTime = updateRequest.EndTime,
 					GameId = game.Id,
+					EventId = updateRequest.EventId,
 					LocationId = string.IsNullOrEmpty(updateRequest.SelectedLocationId) ? null : Guid.Parse(updateRequest.SelectedLocationId),
 					Id = updateRequest.Id,
 					ContentId = updateRequest.ContentId,

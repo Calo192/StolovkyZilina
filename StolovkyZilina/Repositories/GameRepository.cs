@@ -44,12 +44,12 @@ namespace StolovkyZilina.Repositories
 
 		public async Task<Game?> GetAsync(Guid id)
 		{
-            return await stolovkyDbContext.Games.Include(x => x.Content).Include(x => x.Content.Tags).Include(x => x.Content.Likes).Include(x => x.Content.Comments).FirstOrDefaultAsync(x => x.Id == id);
+            return await stolovkyDbContext.Games.Include(x => x.Content).Include(x => x.Content.Tags).Include(x => x.Content.Likes).Include(x => x.Content.Comments).Include(x => x.GameCategory).FirstOrDefaultAsync(x => x.Id == id);
 		}
 
 		public async Task<Game?> GetAsync(string urlHandle)
 		{
-			return await stolovkyDbContext.Games.Include(x => x.Content).Include(x => x.Content.Tags).Include(x => x.Content.Likes).Include(x => x.Content.Comments).FirstOrDefaultAsync(x => x.UrlHandle == urlHandle);
+			return await stolovkyDbContext.Games.Include(x => x.Content).Include(x => x.Content.Tags).Include(x => x.Content.Likes).Include(x => x.Content.Comments).Include(x => x.GameCategory).FirstOrDefaultAsync(x => x.UrlHandle == urlHandle);
 		}
 
 		public async Task<Game?> GetAsyncByName(string name)
@@ -77,6 +77,7 @@ namespace StolovkyZilina.Repositories
 				existingGame.FeaturedImage = game.FeaturedImage;
                 existingGame.SpaceRequirement = game.SpaceRequirement;
                 existingGame.UrlHandle = game.UrlHandle;
+				existingGame.GameCategoryId = game.GameCategoryId;
 				existingGame.Approved = game.Approved;
 				existingGame.Content = game.Content;
 

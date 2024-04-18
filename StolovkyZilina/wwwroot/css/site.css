@@ -102,3 +102,15 @@ body {
     color: white;
     font-size: 30px;
 }
+
+.square-aspect-ratio {
+    width: 100%; /* Set width to 100% */
+    padding-bottom: 100%; /* Set padding-bottom to 100% to make it square */
+    position: relative; /* Needed for absolute positioning */
+}
+
+.square-aspect-ratio > iframe {
+    position: absolute; /* Make the iframe absolutely positioned */
+    width: 100%; /* Set iframe width to fill the container */
+    height: 100%; /* Set iframe height to fill the container */
+}

@@ -97,6 +97,7 @@ namespace StolovkyZilina.Controllers
 					ContentId = game.ContentId,
 					Name = game.Name,
 					Desc = game.Desc,
+					Category = game.GameCategory.Name,
 					ShortDesc = game.ShortDesc,
 					Difficulty = game.Difficulty,
 					Playtime = game.Playtime,
@@ -154,6 +155,7 @@ namespace StolovkyZilina.Controllers
 					{
 						Id = play.Id,
 						ContentId = play.ContentId,
+						EventId = play.EventId,
 						EndTime = play.EndTime,
 						StartTime = play.StartTime,
 						GameFeaturedImage = play.Game.FeaturedImage,
@@ -164,6 +166,7 @@ namespace StolovkyZilina.Controllers
 						IsOnPointsGame = play.Game.OnPoints,
 						IsCoopGame = play.Game.Cooperative,
 						Location = play.Location,
+						Event = play.Event,
 						Players = players.OrderByDescending(p => p.Score).ToList()
 					};
 

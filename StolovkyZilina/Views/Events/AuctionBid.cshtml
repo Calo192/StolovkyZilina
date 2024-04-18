@@ -1,0 +1,73 @@
+﻿@model StolovkyZilina.Models.ViewModels.AuctionBidViewModel
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+	<div class="container">
+		<h1>Ponuka do aukcie</h1>
+	</div>
+</div>
+
+
+<div class="container py-5">
+    @if (Model.MaxBid > 0)
+    {
+        <form method="post">
+            <div class="mb-5">
+                <div class="form-floating flex-fill">
+                    <input class="form-control" list="datalistOptions" asp-for="SelectedGame" id="gamesList" required>
+                    <datalist id="datalistOptions">
+                        @foreach (var game in Model.AllValidGameNames)
+                        {
+                            <option value="@game"></option>
+                        }
+                    </datalist>
+                    <label for="gamesList" class="form-label">Názov hry</label>
+                </div>
+            </div>
+            <div class="mb-3" id="rangeInputSection" style="display: none;">
+                <label id="rangeLabel" for="ppt" class="form-label">Ponuka - <strong>1</strong></label>
+                <div class="container d-flex">
+                    <p class="text-start" style="width: 100px">1</p>
+                    <input type="range" class="form-range p-3" min="1" max="@Model.MaxBid" step="1" id="ppt" asp-for="Bid" oninput="updateLabel(this.value)">
+                    <p class="text-end" style="width: 100px">@Model.MaxBid</p>
+                </div>
+                <div class="my-4 d-flex align-content-center justify-content-center">
+                    <button type="submit" name="submitButton" value="recordScore" class="btn btn-primary">
+                        Zadať ponuku
+                    </button>
+                    <input type="hidden" id="eventId" name="eventId" value="@Model.EventId">
+                    <input type="hidden" id="userId" name="userId" value="@Model.UserId">
+                </div>
+            </div>
+        </form>
+    }
+    else
+    {
+        <p>Nedostatok mincí</p>
+    }
+</div>
+
+<script>
+    function updateLabel(newValue) {
+        document.getElementById("rangeLabel").innerHTML = "Ponuka - <strong>" + newValue + "</strong>";
+    }
+
+    // Check if the input with id "gamesList" is not empty
+    function checkInput() {
+        var gamesListInput = document.getElementById("gamesList");
+        var rangeInputSection = document.getElementById("rangeInputSection");
+
+        if (gamesListInput.value.trim() !== "") {
+            rangeInputSection.style.display = "block";
+        } else {
+            rangeInputSection.style.display = "none";
+        }
+    }
+
+    // Check the input on page load
+    checkInput();
+
+    // Add an event listener to the input to check it whenever it changes
+    document.getElementById("gamesList").addEventListener("input", checkInput);
+</script>

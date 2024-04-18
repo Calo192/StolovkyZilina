@@ -1,4 +1,5 @@
-﻿using StolovkyZilina.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using StolovkyZilina.Data;
 using StolovkyZilina.Models.Domain;
 
 namespace StolovkyZilina.Repositories
@@ -34,10 +35,10 @@ namespace StolovkyZilina.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<GamePoll?> GetAsync(Guid id)
+        public async Task<GamePoll?> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
-        }
+			return await stolovkyDbContext.GamePolls.Include(x => x.GamesInPoll).Include(x => x.Event).ThenInclude(x => x.ParticipationVotes).Include(x => x.GameVotes).ThenInclude(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+		}
 
         public Task<GamePoll?> GetAsync(string urlHandle)
         {

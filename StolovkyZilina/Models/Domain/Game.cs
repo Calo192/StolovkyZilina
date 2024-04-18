@@ -19,6 +19,8 @@
 		public bool Approved { get; set; }
 		public Guid ContentId { get; set; }
 		public Content Content { get; set; }
+		public Guid? GameCategoryId { get; set; }
+		public GameCategory? GameCategory { get; set; }
 		public List<GameOwner> Owners { get; set; }
 		public List<GamePlay> Plays { get; set; }
 		public ICollection<GamePoll> GamePolls { get; set; }

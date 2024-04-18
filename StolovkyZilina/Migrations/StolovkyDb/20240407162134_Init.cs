@@ -52,6 +52,18 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "GameCategories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameCategories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Languages",
                 columns: table => new
                 {
@@ -111,6 +123,7 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                     PrefferedPlaytime = table.Column<int>(type: "int", nullable: true),
                     PrefferedPlayDay = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PrefferedPlayerCount = table.Column<int>(type: "int", nullable: true),
+                    Influence = table.Column<int>(type: "int", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Desc = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Competitive = table.Column<bool>(type: "bit", nullable: false)
@@ -142,38 +155,6 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "Games",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Desc = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShortDesc = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Difficulty = table.Column<int>(type: "int", nullable: true),
-                    Playtime = table.Column<int>(type: "int", nullable: true),
-                    SpaceRequirement = table.Column<int>(type: "int", nullable: true),
-                    MinPlayerCount = table.Column<int>(type: "int", nullable: false),
-                    MaxPlayerCount = table.Column<int>(type: "int", nullable: false),
-                    Cooperative = table.Column<bool>(type: "bit", nullable: false),
-                    OnPoints = table.Column<bool>(type: "bit", nullable: false),
-                    FeaturedImage = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    UrlHandle = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Author = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Approved = table.Column<bool>(type: "bit", nullable: false),
-                    ContentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Games", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Games_Contents_ContentId",
-                        column: x => x.ContentId,
-                        principalTable: "Contents",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Ratings",
                 columns: table => new
                 {
@@ -195,12 +176,51 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "Games",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Desc = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ShortDesc = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Difficulty = table.Column<int>(type: "int", nullable: true),
+                    Playtime = table.Column<int>(type: "int", nullable: true),
+                    SpaceRequirement = table.Column<int>(type: "int", nullable: true),
+                    MinPlayerCount = table.Column<int>(type: "int", nullable: false),
+                    MaxPlayerCount = table.Column<int>(type: "int", nullable: false),
+                    Cooperative = table.Column<bool>(type: "bit", nullable: false),
+                    OnPoints = table.Column<bool>(type: "bit", nullable: false),
+                    FeaturedImage = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    UrlHandle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Author = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Approved = table.Column<bool>(type: "bit", nullable: false),
+                    ContentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Games", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Games_Contents_ContentId",
+                        column: x => x.ContentId,
+                        principalTable: "Contents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Games_GameCategories_GameCategoryId",
+                        column: x => x.GameCategoryId,
+                        principalTable: "GameCategories",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Events",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MakeGamesSuggestion = table.Column<bool>(type: "bit", nullable: false),
+                    AuctionType = table.Column<int>(type: "int", nullable: false),
                     LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Time = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ContentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -250,6 +270,34 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "AuctionOffers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdealPlayerCount = table.Column<int>(type: "int", nullable: true),
+                    Offer = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuctionOffers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AuctionOffers_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AuctionOffers_UserProfiles_UserId",
+                        column: x => x.UserId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Owners",
                 columns: table => new
                 {
@@ -283,6 +331,32 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                     table.ForeignKey(
                         name: "FK_Owners_UserProfiles_OwnerId",
                         column: x => x.OwnerId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlayerMmrs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Mmr = table.Column<double>(type: "float", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerMmrs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlayerMmrs_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlayerMmrs_UserProfiles_UserId",
+                        column: x => x.UserId,
                         principalTable: "UserProfiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -349,7 +423,7 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                         column: x => x.ContentId,
                         principalTable: "Contents",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Plays_Events_EventId",
                         column: x => x.EventId,
@@ -360,7 +434,7 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Plays_Locations_LocationId",
                         column: x => x.LocationId,
@@ -383,13 +457,13 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                         column: x => x.GamePollsId,
                         principalTable: "GamePolls",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_GameGamePoll_Games_GamesInPollId",
                         column: x => x.GamesInPollId,
                         principalTable: "Games",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -409,19 +483,19 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                         column: x => x.GamePollId,
                         principalTable: "GamePolls",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_GameVotes_Games_GameId",
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_GameVotes_UserProfiles_UserId",
                         column: x => x.UserId,
                         principalTable: "UserProfiles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -430,6 +504,7 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Result = table.Column<int>(type: "int", nullable: false),
+                    MmrDiff = table.Column<int>(type: "int", nullable: false),
                     PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GuestPlayerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PlayerInfo = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -450,6 +525,16 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                         principalTable: "UserProfiles",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuctionOffers_GameId",
+                table: "AuctionOffers",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuctionOffers_UserId",
+                table: "AuctionOffers",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ContentId",
@@ -487,6 +572,11 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                 column: "ContentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Games_GameCategoryId",
+                table: "Games",
+                column: "GameCategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GameVotes_GameId",
                 table: "GameVotes",
                 column: "GameId");
@@ -520,6 +610,16 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                 name: "IX_ParticipationVotes_EventId",
                 table: "ParticipationVotes",
                 column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerMmrs_GameId",
+                table: "PlayerMmrs",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerMmrs_UserId",
+                table: "PlayerMmrs",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlayerPlayResults_GamePlayId",
@@ -564,6 +664,9 @@ namespace StolovkyZilina.Migrations.StolovkyDb
                 name: "AdminMessages");
 
             migrationBuilder.DropTable(
+                name: "AuctionOffers");
+
+            migrationBuilder.DropTable(
                 name: "Comments");
 
             migrationBuilder.DropTable(
@@ -580,6 +683,9 @@ namespace StolovkyZilina.Migrations.StolovkyDb
 
             migrationBuilder.DropTable(
                 name: "ParticipationVotes");
+
+            migrationBuilder.DropTable(
+                name: "PlayerMmrs");
 
             migrationBuilder.DropTable(
                 name: "PlayerPlayResults");
@@ -613,6 +719,9 @@ namespace StolovkyZilina.Migrations.StolovkyDb
 
             migrationBuilder.DropTable(
                 name: "Contents");
+
+            migrationBuilder.DropTable(
+                name: "GameCategories");
         }
     }
 }

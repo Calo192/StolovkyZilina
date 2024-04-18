@@ -7,6 +7,7 @@ namespace StolovkyZilina.Models.ViewModels
 	{
 		public string Name { get; set; }
 		public string? Desc { get; set; }
+		public string? Category{ get; set; }
 		public string? ShortDesc { get; set; }
 		public int? Difficulty { get; set; }
 		public int? Playtime { get; set; }

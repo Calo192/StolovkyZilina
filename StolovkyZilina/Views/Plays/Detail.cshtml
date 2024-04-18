@@ -109,7 +109,17 @@
 					@if (Model.Location != null)
 					{
 						<dt class="col-6">Miesto</dt>
-						<dd class="col-6">@Model.Location.Name</dd>
+						<dd class="col-6"><a href="@("https://www.google.com/maps?q="+Model.Location.City+","+Model.Location.Name)" target="_blank">@Model.Location.Name</a></dd>
+					}
+					@if (Model.Event != null)
+					{
+						<dt class="col-6">Udalosť</dt>
+						<dd class="col-6">
+							<a asp-area=""
+							   asp-controller="Events"
+							   asp-action="Detail"
+							   asp-route-id="@Model.Event.Id">@Model.Event.Name</a>
+						</dd>
 					}
 					@if (Model.StartTime != null)
 					{

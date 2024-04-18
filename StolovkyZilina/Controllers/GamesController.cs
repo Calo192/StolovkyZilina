@@ -12,12 +12,14 @@ namespace StolovkyZilina.Controllers
         private readonly IRepository<Game> gameRepository;
         private readonly ITagRepository tagRepository;
 		private readonly IRepository<Content> contentRepository;
+		private readonly IRepository<GameCategory> gameCategoryRepository;
 
-		public GamesController(IRepository<Game> gameRepository, ITagRepository tagRepository, IRepository<Content> contentRepository)
+		public GamesController(IRepository<Game> gameRepository, ITagRepository tagRepository, IRepository<Content> contentRepository, IRepository<GameCategory> gameCategoryRepository)
         {
             this.gameRepository = gameRepository;
             this.tagRepository = tagRepository;
 			this.contentRepository = contentRepository;
+			this.gameCategoryRepository = gameCategoryRepository;
 		}
 
         [HttpGet]
@@ -32,10 +34,13 @@ namespace StolovkyZilina.Controllers
         public async Task<IActionResult> Add()
         {
             var tags = await tagRepository.GetAllAsync();
+            var categories = await gameCategoryRepository.GetAllAsync();
+
 
             var model = new GameRequest
             {
-                Tags = tags.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                Tags = tags.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() }),
+                Categories = categories.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
             };
             return View(model);
         }
@@ -49,6 +54,7 @@ namespace StolovkyZilina.Controllers
                 Desc = addGameRequest.Desc,
                 ShortDesc = addGameRequest.ShortDesc,
                 Difficulty = addGameRequest.Difficulty,
+                GameCategoryId = Guid.Parse(addGameRequest.SelectedCategory),
 				Playtime = addGameRequest.Playtime,
                 SpaceRequirement = addGameRequest.SpaceRequirement,
 				MinPlayerCount = addGameRequest.MinPlayerCount,

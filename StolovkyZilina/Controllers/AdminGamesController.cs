@@ -12,12 +12,14 @@ namespace StolovkyZilina.Controllers
 		private readonly IRepository<Game> gameRepository;
         private readonly ITagRepository tagRepository;
         private readonly IRepository<Content> contentRepository;
+        private readonly IRepository<GameCategory> gameCategoryRepository;
 
-        public AdminGamesController(IRepository<Game> gameRepository, ITagRepository tagRepository, IRepository<Content> contentRepository)
+        public AdminGamesController(IRepository<Game> gameRepository, ITagRepository tagRepository, IRepository<Content> contentRepository, IRepository<GameCategory> gameCategoryRepository)
         {
 			this.gameRepository = gameRepository;
             this.tagRepository = tagRepository;
             this.contentRepository = contentRepository;
+            this.gameCategoryRepository = gameCategoryRepository;
         }
 
         [HttpGet]
@@ -36,12 +38,11 @@ namespace StolovkyZilina.Controllers
         {
             var game = await gameRepository.GetAsync(id);
             var tagDomainModel = await tagRepository.GetAllAsync();
-
+            var categories = await gameCategoryRepository.GetAllAsync();
             if (game != null)
             {
-                //game.Content = await contentRepository.GetAsync(game.ContentId);
                 var model = new GameRequest
-				{
+                {
                     Id = game.Id,
                     ContentId = game.ContentId,
                     Name = game.Name,
@@ -55,9 +56,14 @@ namespace StolovkyZilina.Controllers
                     MaxPlayerCount = game.MaxPlayerCount,
                     Cooperative = game.Cooperative,
                     OnPoints = game.OnPoints,
+                    SelectedCategory = game.GameCategoryId.ToString(),
                     SpaceRequirement = game.SpaceRequirement,
                     Approved = game.Approved,
-
+                    Categories = categories.Select(x => new SelectListItem
+                    {
+                        Text = x.Name,
+                        Value = x.Id.ToString()
+                    }),
                     Tags = tagDomainModel.Select(x => new SelectListItem
                     {
                         Text = x.Name,
@@ -78,6 +84,7 @@ namespace StolovkyZilina.Controllers
             {
                 Id = editGameRequest.Id,
                 ContentId = editGameRequest.ContentId,
+                GameCategoryId = Guid.Parse(editGameRequest.SelectedCategory),
                 Name = editGameRequest.Name,
                 Author = editGameRequest.Author,
                 Desc = editGameRequest.Desc,

@@ -63,7 +63,8 @@ namespace StolovkyZilina.Repositories
 				existing.PrefferedPlayerCount = item.PrefferedPlayerCount;
 				existing.PrefferedPlayDay = item.PrefferedPlayDay;
 				existing.City = item.City;
-				existing.Desc = item.Desc;
+				existing.Influence = item.Influence;
+                existing.Desc = item.Desc;
 				existing.Competitive = item.Competitive;
 				existing.GamesOwned = item.GamesOwned;
 

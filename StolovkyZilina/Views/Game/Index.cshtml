@@ -39,6 +39,11 @@
 								<h5 class="text-secondary">@Model.Author</h5>
 							}
 							<dl class="row">
+								@if (!string.IsNullOrEmpty(Model.Category))
+								{
+									<dt class="col-6">Kategória</dt>
+									<dd class="col-6">@Model.Category</dd>
+								}
 								<dt class="col-6">Herná doba</dt>
 								<dd class="col-6">@Model.GetPlaytimeString() (@(Model.Playtime + 1)/5)</dd>
 								<dt class="col-6">Obtiažnosť</dt>

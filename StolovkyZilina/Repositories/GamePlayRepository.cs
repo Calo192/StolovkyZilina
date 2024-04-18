@@ -34,22 +34,27 @@ namespace StolovkyZilina.Repositories
 
 		public async Task<IEnumerable<GamePlay>> GetAllAsync()
 		{
-			return await stolovkyDbContext.Plays.Include(x => x.Results).ThenInclude(x => x.Player).Include(x => x.Location).Include(x => x.Game).Include(x => x.Content).OrderByDescending(x => x.StartTime).ToListAsync();
+			return await stolovkyDbContext.Plays.Include(x => x.Results).ThenInclude(x => x.Player).Include(x => x.Location).Include(x => x.Game).Include(x => x.Content).Include(x => x.Event).OrderByDescending(x => x.StartTime).ToListAsync();
 		}
 
 		public async Task<IEnumerable<GamePlay>> GetAllAsync(string urlHandle)
 		{
-			return await stolovkyDbContext.Plays.Include(x => x.Results).ThenInclude(x => x.Player).Include(x => x.Location).Include(x => x.Game).Include(x => x.Content).Where(x => x.Game.UrlHandle == urlHandle).OrderByDescending(x => x.StartTime).ToListAsync();
+			if (urlHandle.StartsWith("p_"))
+			{
+				Guid eventId = Guid.Parse(urlHandle.Substring(2));
+				return await stolovkyDbContext.Plays.Include(x => x.Results).ThenInclude(x => x.Player).Include(x => x.Location).Include(x => x.Game).Include(x => x.Content).Include(x => x.Event).Where(x => x.EventId == eventId).OrderByDescending(x => x.StartTime).ToListAsync();
+			}
+			return await stolovkyDbContext.Plays.Include(x => x.Results).ThenInclude(x => x.Player).Include(x => x.Location).Include(x => x.Game).Include(x => x.Content).Include(x => x.Event).Where(x => x.Game.UrlHandle == urlHandle).OrderByDescending(x => x.StartTime).ToListAsync();
 		}
 
 		public async Task<GamePlay?> GetAsync(Guid id)
 		{
-			return await stolovkyDbContext.Plays.Include(x => x.Results).ThenInclude(x => x.Player).Include(x => x.Location).Include(x => x.Game).Include(x => x.Content).FirstOrDefaultAsync(x => x.Id == id);
+			return await stolovkyDbContext.Plays.Include(x => x.Results).ThenInclude(x => x.Player).Include(x => x.Location).Include(x => x.Game).Include(x => x.Content).Include(x => x.Event).FirstOrDefaultAsync(x => x.Id == id);
 		}
 
 		public async Task<GamePlay?> GetAsync(string urlHandle)
 		{
-			return await stolovkyDbContext.Plays.Include(x => x.Results).ThenInclude(x => x.Player).Include(x => x.Location).Include(x => x.Game).Include(x => x.Content).FirstOrDefaultAsync(x => x.Game.UrlHandle == urlHandle);
+			return await stolovkyDbContext.Plays.Include(x => x.Results).ThenInclude(x => x.Player).Include(x => x.Location).Include(x => x.Game).Include(x => x.Content).Include(x => x.Event).FirstOrDefaultAsync(x => x.Game.UrlHandle == urlHandle);
 		}
 
 		public async Task<GamePlay?> GetAsyncByName(string name)
@@ -64,12 +69,14 @@ namespace StolovkyZilina.Repositories
             {
                 existingGamePlay.Id = item.Id;
 				existingGamePlay.ContentId = item.ContentId;
+				existingGamePlay.EventId = item.EventId;
                 existingGamePlay.GameId = item.GameId;
                 existingGamePlay.LocationId = item.LocationId;
                 existingGamePlay.StartTime = item.StartTime;
                 existingGamePlay.EndTime = item.EndTime;
                 existingGamePlay.Desc = item.Desc;
 				existingGamePlay.Results = item.Results;
+				existingGamePlay.EventId = item.EventId;
 
 				await stolovkyDbContext.SaveChangesAsync();
                 return existingGamePlay;

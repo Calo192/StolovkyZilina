@@ -1,0 +1,123 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@model StolovkyZilina.Models.ViewModels.GamePollDetailViewModel
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2 mb-3">
+	<div class="container">
+		<h1>@Model.PollName - detail hlasovania</h1>
+	</div>
+</div>
+
+<div class="container">
+	<div class="d-flex row g-0 mb-3">
+		<div class="col-12 p-2">
+			<dl class="row">
+				<dt class="col-10">Počet hlasujúcich:</dt>
+				<dd class="col-2 text-secondary">@Model.GameVotes.GroupBy(vote => vote.UserId).Count()</dd>
+				<dt class="col-10">Počet hlasov:</dt>
+				<dd class="col-2 text-secondary">@Model.GameVotes.Count()</dd>
+				<dt class="col-10">Účasť na hlasovaní:</dt>
+				<dd class="col-2 text-secondary">@(Math.Round((double)Model.GameVotes.GroupBy(vote => vote.UserId).Count() / (double)Model.Event.ParticipationVotes.Where(v => v.VoteStatus != 3).Count() * 100, 1))%</dd>
+			</dl>
+		</div>
+	</div>
+
+	@foreach (var gip in Model.GamesInPoll)
+	{
+		<div class="shadow mb-3">
+			<div class="d-flex row g-0">
+				<div class="col-sm-2 d-flex align-items-center justify-content-center">
+					@if (gip.FeaturedImage != null)
+					{
+						<a asp-area="" asp-controller="Game" asp-action="Index" asp-route-urlHandle="@gip.UrlHandle">
+							<img src="data:image/png;base64,@Convert.ToBase64String(gip.FeaturedImage)" class="img-fluid h-100" alt="@gip.Name">
+						</a>
+					}
+					else
+					{
+						<a asp-area="" asp-controller="Game" asp-action="Index" asp-route-urlHandle="@gip.UrlHandle">
+							<img src="~/Resources/Images/gameCover.jpeg" class="img-fluid h-100" alt="@gip.Name">
+						</a>
+					}
+				</div>
+				<div class="col-sm-10 p-2">
+					<div class="col-10">
+						<h3>@gip.Name</h3>
+					</div>
+					<div class="progress mb-2" role="progressbar" aria-label="Example with label" aria-valuenow="@Math.Round(((double)@Model.GameVotes.Where(vote => vote.GameId == gip.Id).Count()/(double)@Model.GameVotes.Count())*100, 1)" aria-valuemin="0" aria-valuemax="100">
+						<div class="progress-bar" style="width: @Math.Round(((double)@Model.GameVotes.Where(vote => vote.GameId == gip.Id).Count()/(double)@Model.GameVotes.Count())*100, 1)%">@Math.Round(((double)@Model.GameVotes.Where(vote => vote.GameId == gip.Id).Count()/(double)@Model.GameVotes.Count())*100, 1)%</div>
+					</div>
+					<dl class="row">
+						<dt class="col-10">Percentuálny podiel:</dt>
+						<dd class="col-2 text-secondary">@Math.Round(((double)@Model.GameVotes.Where(vote => vote.GameId == gip.Id).Count()/(double)@Model.GameVotes.Count())*100, 1)%</dd>
+						<dt class="col-10">Celkový počet hlasov:</dt>
+						<dd class="col-2 text-secondary">@Model.GameVotes.Where(vote => vote.GameId == gip.Id).Count()</dd>
+						@{
+							var wvc = 0.0;
+							var votes = Model.GameVotes.Where(vote => vote.GameId == gip.Id);
+							foreach (var vote in votes)
+							{
+								wvc += 1 / ((double)Model.GameVotes.Where(v => v.UserId == vote.UserId).Count());
+							}
+							<dt class="col-10">Vážený počet hlasov:</dt>
+							<dd class="col-2 text-secondary">@Math.Round(wvc, 1)</dd>
+						}
+					</dl>
+				</div>
+			</div>
+			<hr class="m-0">
+			<div class="d-flex row g-0 align-items-center justify-content-center">
+			</div>
+			@foreach (var vote in Model.GameVotes.Where(gw => gw.GameId == gip.Id))
+			{
+				<div class="d-flex row g-0 py-3">
+					<div class="col-8 d-flex align-items-center ps-3">
+						<div>
+							<h3 class="my-2">@userManager.FindByIdAsync(vote.User.UserId.ToString()).Result.UserName</h3>
+							<dl class="row my-2">
+								<dt class="col-6">Účasť</dt>
+								@if (Model.Event.ParticipationVotes.Where(p => p.UserId == vote.UserId).FirstOrDefault()?.VoteStatus == 2)
+								{
+									<dd class="col-6 text-success">Potvrdená</dd>
+								}
+								else @if (Model.Event.ParticipationVotes.Where(p => p.UserId == vote.UserId).FirstOrDefault()?.VoteStatus == 1)
+								{
+									<dd class="col-6 text-secondary">Možná</dd>
+								}
+								else @if (Model.Event.ParticipationVotes.Where(p => p.UserId == vote.UserId).FirstOrDefault()?.VoteStatus == 3)
+								{
+									<dd class="col-6 text-danger">Nepotvrdená</dd>
+								}
+								<dt class="col-6">Váha hlasu</dt>
+								<dd class="col-6 text-secondary">@Math.Round((1 / ((double)Model.GameVotes.Where(v => v.UserId == vote.UserId).Count()))*100,1)%</dd>
+							</dl>
+						</div>
+					</div>
+					<div class="col-4 d-flex align-items-center justify-content-center">
+						@if (vote.User.FeaturedImage != null)
+						{
+							<a asp-area=""
+							   asp-controller="Account"
+							   asp-action="Profile"
+							   asp-route-userName="@userManager.FindByIdAsync(vote.User.UserId.ToString()).Result.UserName">
+								<img alt="@vote.User.Name" title="@userManager.FindByIdAsync(vote.User.UserId.ToString()).Result.UserName" class="rounded-circle shadow" style="max-height: 65px; max-width: 65px" src="data:image/png;base64,@Convert.ToBase64String(vote.User.FeaturedImage)">
+							</a>
+						}
+						else
+						{
+							<a asp-area=""
+							   asp-controller="Account"
+							   asp-action="Profile"
+							   asp-route-userName="@userManager.FindByIdAsync(vote.User.UserId.ToString()).Result.UserName">
+								<img alt="@vote.User.Name" title="@userManager.FindByIdAsync(vote.User.UserId.ToString()).Result.UserName" class="rounded-circle shadow" style="max-height: 65px; max-width: 65px" src="~/Resources/Images/meeple.jpeg">
+							</a>
+						}
+					</div>
+				</div>
+			}
+		</div>
+	}
+</div>

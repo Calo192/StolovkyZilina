@@ -15,5 +15,6 @@ namespace StolovkyZilina.Models.Requests
         public string[] SelectedTags { get; set; } = Array.Empty<string>();
         public IEnumerable<SelectListItem> Locations { get; set; }
         public string SelectedLocationId { get; set; }
+        public int AuctionOption { get; set; }
     }
 }
